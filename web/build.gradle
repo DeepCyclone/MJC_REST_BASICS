@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+apply plugin: 'war'
+
+group 'com.epam.esm'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation project(':core')
+    implementation project(':persistence')
+}
+
+test {
+    useJUnitPlatform()
+}
