@@ -25,7 +25,7 @@ public class GiftCertificateController {
         return null;
     }
 
-    @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{id}")
     public GiftCertificate getByID(@PathVariable("id") Long id){
         GiftCertificate giftCertificate = service.getByID(id);
         if(giftCertificate == null){throw new ObjectNotFoundException("Object with ID:"+id+"wasn't found",id);}
