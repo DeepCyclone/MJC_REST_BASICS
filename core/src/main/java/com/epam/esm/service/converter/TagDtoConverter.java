@@ -1,12 +1,14 @@
 package com.epam.esm.service.converter;
 
-import com.epam.esm.dto.TagDto;
+import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.repository.model.Tag;
 
 public class TagDtoConverter implements ConverterTemplate<Tag, TagDto>{
     @Override
     public Tag convertFromDto(TagDto dto) {
-        return null;
+        return Tag.builder().
+                name(dto.getName()).
+                build();
     }
 
     @Override

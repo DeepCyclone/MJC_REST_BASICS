@@ -1,7 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.dto.TagDto;
+import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.exception.ObjectNotFoundException;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.impl.TagService;
@@ -40,6 +39,6 @@ public class TagController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public void createTag(@RequestBody TagDto tagDto){
-
+        System.out.println(tagDto);
     }
 }

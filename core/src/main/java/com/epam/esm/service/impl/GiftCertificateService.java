@@ -25,9 +25,18 @@ public class GiftCertificateService {
         return repository.getByID(ID);
     }
 
+    public GiftCertificate addEntity(GiftCertificate certificate){
+        return repository.create(certificate);
+    }
+
     @Transactional
     public void deleteByID(long ID){
         repository.deleteByID(ID);
+    }
+
+    @Transactional
+    public void update(GiftCertificate certificate){
+        repository.update(certificate);
     }
 
 }

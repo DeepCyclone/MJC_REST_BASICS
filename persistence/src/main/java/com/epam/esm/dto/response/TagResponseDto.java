@@ -1,4 +1,4 @@
-package com.epam.esm.repository.model;
+package com.epam.esm.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Tag implements Serializable {
+public class TagResponseDto implements Serializable {
     private long id;
     private String name;
 }

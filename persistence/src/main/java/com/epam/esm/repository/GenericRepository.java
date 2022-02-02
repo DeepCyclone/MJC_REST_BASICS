@@ -3,8 +3,7 @@ package com.epam.esm.repository;
 import java.util.List;
 
 public interface GenericRepository <T>{
-    long create(T object);
+    T create(T object);
     List<T> readAll();
-    boolean update(T object);
-    boolean delete(T object);
+    void update(T object);
 }

@@ -28,6 +28,7 @@ public class DatabaseConfig {
         hikariConfig.setUsername("root");
         hikariConfig.setPassword("root");
         hikariConfig.setJdbcUrl("jdbc:mysql://localhost:3306/cerfiticatessystem");
+        hikariConfig.setMaximumPoolSize(5);
         HikariDataSource dataSource = new HikariDataSource(hikariConfig);
         return dataSource;
     }

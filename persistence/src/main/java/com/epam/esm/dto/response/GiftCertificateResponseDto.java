@@ -1,4 +1,4 @@
-package com.epam.esm.repository.model;
+package com.epam.esm.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GiftCertificate implements Serializable {
+public class GiftCertificateResponseDto implements Serializable {
     private long id;
     private String name;
     private String description;
