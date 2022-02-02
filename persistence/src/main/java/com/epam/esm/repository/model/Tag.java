@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-public class Tag {
+import java.io.Serializable;
+
+public class Tag implements Serializable {
     public Tag(long id, String name) {
         this.id = id;
         this.name = name;

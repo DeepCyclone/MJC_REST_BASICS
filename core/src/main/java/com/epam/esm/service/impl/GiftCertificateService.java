@@ -4,6 +4,7 @@ import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.model.GiftCertificate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,9 +22,12 @@ public class GiftCertificateService {
         return repository.readAll();
     }
     public GiftCertificate getByID(long ID){
-        return repository.readByID(ID);
+        return repository.getByID(ID);
     }
-    public void deleteByID(long ID){
 
+    @Transactional
+    public void deleteByID(long ID){
+        repository.deleteByID(ID);
     }
+
 }

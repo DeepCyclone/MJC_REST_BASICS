@@ -1,13 +1,11 @@
 package com.epam.esm.repository.model;
 
-
-import lombok.*;
-
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 
-public class GiftCertificate {
+public class GiftCertificate implements Serializable {
     private long id;
     private String name;
     private String description;

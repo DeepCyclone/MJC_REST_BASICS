@@ -21,7 +21,7 @@ public class TagService {
         return tagRepository.readAll();
     }
     public Tag getByID(long ID){
-        return tagRepository.readByID(ID);
+        return tagRepository.getByID(ID);
     }
     public void deleteByID(long ID){
 

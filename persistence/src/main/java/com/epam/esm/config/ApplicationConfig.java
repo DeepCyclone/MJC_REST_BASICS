@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 
@@ -24,8 +25,8 @@ public class ApplicationConfig {
         return new JdbcTemplate(dataSource);//JdbcOperations
     }
 
-//    @Bean
-//    public TransactionTemplate transactionTemplate(){
-//        return new TransactionTemplate(dataSource);
-//    }
+    @Bean
+    public TransactionTemplate transactionTemplate(){
+        return new TransactionTemplate(new DataSourceTransactionManager());
+    }
 }

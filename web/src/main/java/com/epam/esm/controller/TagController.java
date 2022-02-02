@@ -1,13 +1,16 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.dto.GiftCertificateDto;
+import com.epam.esm.dto.TagDto;
 import com.epam.esm.exception.ObjectNotFoundException;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.impl.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/tags")
+@RequestMapping(value = "/tags",produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
 
 
@@ -35,8 +38,8 @@ public class TagController {
 
     }
 
-    @PostMapping
-    public void createTag(){
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void createTag(@RequestBody TagDto tagDto){
 
     }
 }

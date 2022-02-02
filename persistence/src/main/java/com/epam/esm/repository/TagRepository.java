@@ -2,7 +2,7 @@ package com.epam.esm.repository;
 
 import com.epam.esm.repository.model.Tag;
 
-public interface TagRepository extends GenericRepository<Tag>{
+public interface TagRepository extends GenericRepository<Tag>,Identifiable<Tag>{
     @Override
     boolean update(Tag tag) throws UnsupportedOperationException;
 }
