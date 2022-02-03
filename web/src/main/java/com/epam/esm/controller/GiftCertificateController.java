@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -26,10 +27,10 @@ public class GiftCertificateController {
 
     @GetMapping
     public List<GiftCertificate> getAll(){
-        return null;
+        return service.getAll();
     }
 
-    @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value = "/{id:\\d+}")
     public GiftCertificate getByID(@PathVariable long id,
                                    @RequestParam(required = false) String tagName,
                                    @RequestParam(required = false) String namePart,
@@ -37,19 +38,24 @@ public class GiftCertificateController {
                                    @RequestParam(required = false,defaultValue = "ASC") String dateSortOrder,
                                    @RequestParam(required = false,defaultValue = "ASC") String nameSortOrder){
         GiftCertificate giftCertificate = service.getByID(id);
-        if(giftCertificate == null){throw new ObjectNotFoundException("Object with ID:"+id+"wasn't found",id);}
+        if(giftCertificate == null){throw new ObjectNotFoundException("Object with ID:"+id+" wasn't found",id);}
         return giftCertificate;
     }
 
 
-    @DeleteMapping(value = "/{id}")
-    public void deleteCertificate(@PathVariable("id") Long id){
+    @DeleteMapping(value = "/{id:\\d+}")
+    public void deleteCertificate(@PathVariable("id") long id){
         service.deleteByID(id);
     }
 
-    @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void updateCertificate(@RequestBody GiftCertificateDto certificateDto){
-        GiftCertificate certificate = converter.convertFromDto(certificateDto);
+    @PatchMapping(value = "/{id:\\d+}")
+    public void updateCertificate(@PathVariable long id,@RequestBody GiftCertificateDto certificateDto){
+        GiftCertificate originalCertificate = service.getByID(id);
+        Optional.ofNullable(certificateDto.getName()).ifPresent(originalCertificate::setName);
+        Optional.ofNullable(certificateDto.getDescription()).ifPresent(originalCertificate::setDescription);
+        Optional.ofNullable(certificateDto.getPrice()).ifPresent(originalCertificate::setPrice);
+        Optional.ofNullable(certificateDto.getDuration()).ifPresent(originalCertificate::setDuration);
+        service.update(originalCertificate);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)

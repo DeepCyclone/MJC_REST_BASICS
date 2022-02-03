@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.List;
 
 @Data
@@ -17,8 +16,6 @@ public class GiftCertificateDto {
     private String name;
     private String description;
     private BigDecimal price;
-    private int duration;
-    private Timestamp createDate;
-    private Timestamp lastUpdateDate;
+    private Integer duration;
     private List<TagDto> associatedTags;
 }
