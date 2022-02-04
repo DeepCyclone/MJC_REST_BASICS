@@ -1,16 +1,18 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.request.GiftCertificateDto;
+import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.exception.ObjectNotFoundException;
 import com.epam.esm.repository.model.GiftCertificate;
+import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.converter.CertificateDtoConverter;
 import com.epam.esm.service.impl.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -44,7 +46,7 @@ public class GiftCertificateController {
 
 
     @DeleteMapping(value = "/{id:\\d+}")
-    public void deleteCertificate(@PathVariable("id") long id){
+    public void deleteCertificate(@PathVariable long id){
         service.deleteByID(id);
     }
 
@@ -55,6 +57,11 @@ public class GiftCertificateController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public GiftCertificate createCertificate(@RequestBody GiftCertificateDto certificateDto){
+        List<Tag> tags = new ArrayList<>();
+        for(TagDto dto:certificateDtoPatch.getAssociatedTags()) {
+            tags.add(tagRepository.create(converter.convertFromDto(dto)));
+        }
+        linkAssociatedTags(certificateID,tags);
         GiftCertificate certificate = converter.convertFromDto(certificateDto);
         return service.addEntity(certificate);//responseDtoMapping
     }

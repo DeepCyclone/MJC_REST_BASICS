@@ -5,6 +5,7 @@ import com.epam.esm.repository.mapping.TagMapping;
 import com.epam.esm.repository.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
@@ -20,18 +21,18 @@ public class TagRepositoryImpl implements TagRepository {
     public static final String READ_ALL = "SELECT * FROM tag";
     public static final String DELETE_BY_ID = "DELETE FROM tag WHERE t_id = ?";
     public static final String CREATE_ENTRY = "INSERT INTO tag(t_name) VALUES (?)";
+    public static final String FETCH_ASSOCIATED_TAGS = "SELECT t_id,t_name FROM tag WHERE t_id IN (SELECT tmgc_t_id FROM tag_m2m_gift_certificate WHERE tmgc_gc_id = ?)";
 
-    private final JdbcOperations jdbcOperations;
-    private final SimpleJdbcInsertOperations simpleJdbcInsert;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public TagRepositoryImpl(JdbcOperations jdbcOperations, SimpleJdbcInsertOperations simpleJdbcInsert) {
-        this.jdbcOperations = jdbcOperations;
-        this.simpleJdbcInsert = simpleJdbcInsert;
+    public TagRepositoryImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public Tag create(Tag object) {
+        SimpleJdbcInsertOperations simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcTemplate);
         simpleJdbcInsert.withTableName("tag").usingGeneratedKeyColumns("t_id");
         Map<String,Object> paramsMap = new HashMap<>();
         paramsMap.put("t_name",object.getName());
@@ -41,7 +42,7 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public List<Tag> readAll() {
-        return jdbcOperations.query(READ_ALL,new TagMapping());
+        return jdbcTemplate.query(READ_ALL,new TagMapping());
     }
 
     @Override
@@ -51,11 +52,16 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Tag getByID(long ID) {
-        return jdbcOperations.queryForObject(READ_BY_ID, new TagMapping(),ID);
+        return jdbcTemplate.queryForObject(READ_BY_ID, new TagMapping(),ID);
     }
 
     @Override
     public void deleteByID(long ID) {
-        jdbcOperations.update(DELETE_BY_ID,ID);
+        jdbcTemplate.update(DELETE_BY_ID,ID);
+    }
+
+    @Override
+    public List<Tag> fetchAssociatedTags(long certificateID) {
+        return jdbcTemplate.query(FETCH_ASSOCIATED_TAGS,new TagMapping(),certificateID);
     }
 }

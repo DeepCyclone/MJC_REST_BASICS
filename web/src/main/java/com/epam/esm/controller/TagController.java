@@ -35,7 +35,7 @@ public class TagController {
 
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @PatchMapping(value = "/{id:\\d+}")
-    public void updateTag(@PathVariable String id){
+    public void updateTag(@PathVariable long id){
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)

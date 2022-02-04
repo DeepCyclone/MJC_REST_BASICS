@@ -27,7 +27,7 @@ public class DatabaseConfig {
         hikariConfig.setDriverClassName("com.mysql.jdbc.Driver");
         hikariConfig.setUsername("root");
         hikariConfig.setPassword("root");
-        hikariConfig.setJdbcUrl("jdbc:mysql://localhost:3306/cerfiticatessystem");
+        hikariConfig.setJdbcUrl("jdbc:mysql://localhost:3306/certificatessystem");
         hikariConfig.setMaximumPoolSize(5);
         HikariDataSource dataSource = new HikariDataSource(hikariConfig);
         return dataSource;
