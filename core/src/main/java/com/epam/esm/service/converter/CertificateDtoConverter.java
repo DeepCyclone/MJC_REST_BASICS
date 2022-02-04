@@ -13,6 +13,7 @@ public class CertificateDtoConverter implements ConverterTemplate<GiftCertificat
                 description(dto.getDescription()).
                 price(dto.getPrice()).
                 duration(dto.getDuration()).
+
                 build();//TODO place date here?+Date format?
     }
 

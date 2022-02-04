@@ -5,8 +5,8 @@ create table gift_certificate
     gc_description VARCHAR(100),
     gc_price DECIMAL(20,10),
     gc_duration INT,
-    gc_create_date timestamp,
-    gc_last_update_date timestamp,
+    gc_create_date timestamp default current_timestamp,
+    gc_last_update_date timestamp default current_timestamp,
     constraint gc_name_index
         unique (gc_name)
 );
@@ -15,7 +15,7 @@ create table tag
 (
     t_id bigint unsigned primary key auto_increment,
     t_name VARCHAR(50),
-    constraint t_name_inder
+    constraint t_name_index
         unique (t_name)
 );
 

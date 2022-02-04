@@ -49,13 +49,8 @@ public class GiftCertificateController {
     }
 
     @PatchMapping(value = "/{id:\\d+}")
-    public void updateCertificate(@PathVariable long id,@RequestBody GiftCertificateDto certificateDto){
-        GiftCertificate originalCertificate = service.getByID(id);
-        Optional.ofNullable(certificateDto.getName()).ifPresent(originalCertificate::setName);
-        Optional.ofNullable(certificateDto.getDescription()).ifPresent(originalCertificate::setDescription);
-        Optional.ofNullable(certificateDto.getPrice()).ifPresent(originalCertificate::setPrice);
-        Optional.ofNullable(certificateDto.getDuration()).ifPresent(originalCertificate::setDuration);
-        service.update(originalCertificate);
+    public void updateCertificate(@PathVariable long id,@RequestBody GiftCertificateDto certificateDtoPatch){
+        service.update(certificateDtoPatch,id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
