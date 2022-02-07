@@ -1,5 +1,6 @@
 package com.epam.esm.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -20,7 +22,9 @@ public class GiftCertificateResponseDto implements Serializable {
     private String description;
     private BigDecimal price;
     private int duration;
-    private Timestamp createDate;
-    private Timestamp lastUpdateDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    private Date createDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    private Date lastUpdateDate;
     private List<TagResponseDto> associatedTags;
 }

@@ -7,6 +7,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,8 +25,8 @@ public class CertificateResponseDtoMapper implements ResultSetExtractor<List<Gif
         gcResponseDto.setDescription(rs.getString("gc_description"));
         gcResponseDto.setDuration(rs.getInt("gc_duration"));
         gcResponseDto.setPrice(rs.getBigDecimal("gc_price"));
-        gcResponseDto.setCreateDate(rs.getTimestamp("gc_create_date"));
-        gcResponseDto.setLastUpdateDate(rs.getTimestamp("gc_last_update_date"));
+        gcResponseDto.setCreateDate(new Date(rs.getTimestamp("gc_create_date").getTime()));
+        gcResponseDto.setLastUpdateDate(new Date(rs.getTimestamp("gc_last_update_date").getTime()));
     }
 
     private TagResponseDto tagStructureCreator(ResultSet rs) throws SQLException {

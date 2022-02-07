@@ -6,7 +6,7 @@ create table gift_certificate
     gc_price DECIMAL(20,10),
     gc_duration INT,
     gc_create_date timestamp default current_timestamp,
-    gc_last_update_date timestamp default current_timestamp,
+    gc_last_update_date timestamp default current_timestamp on update current_timestamp,
     constraint gc_name_index
         unique (gc_name)
 );

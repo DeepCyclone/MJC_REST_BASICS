@@ -18,9 +18,13 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
@@ -37,10 +41,16 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     public static final String JOIN_ON_CONDITION = ") AS ix ON gc_id = ix.tmgc_gc_id";
     public static final String PART_NAME_FILTER = " WHERE gc_name like ?";
     public static final String PART_DESCRIPTION_FILTER = " WHERE gc_description like ?";
-    public static final String COMBINED_SORT = "ORDER BY gc_name ?,gc_last_update_date ?";
+    public static final String COMBINED_SORT = " ORDER BY gc_name ?,gc_last_update_date ?";
     public static final String SEARCH_BY_TAG_NAME = JOIN_PARAMS+TAG_NAME_FILTER+JOIN_ON_CONDITION;
     public static final String SEARCH_BY_GC_NAME_PART = JOIN_PARAMS+JOIN_ON_CONDITION + PART_NAME_FILTER;
     public static final String SEARCH_BY_GC_DESCRIPTION_PART = JOIN_PARAMS+JOIN_ON_CONDITION + PART_DESCRIPTION_FILTER;
+    public static final String SEARCH_BY_TAG_AND_NAME = JOIN_PARAMS + TAG_NAME_FILTER + JOIN_ON_CONDITION + PART_NAME_FILTER;
+    public static final String SEARCH_BY_TAG_AND_DESCRIPTION = JOIN_PARAMS + TAG_NAME_FILTER + JOIN_ON_CONDITION + PART_DESCRIPTION_FILTER;
+    public static final String SEARCH_BY_TAG_AND_DESCRIPTION_SORTED = JOIN_PARAMS + TAG_NAME_FILTER + JOIN_ON_CONDITION + PART_DESCRIPTION_FILTER + COMBINED_SORT;
+    public static final String SEARCH_BY_TAG_AND_NAME_SORTED = JOIN_PARAMS + TAG_NAME_FILTER + JOIN_ON_CONDITION + PART_NAME_FILTER + COMBINED_SORT;
+    public static final String SEARCH_BY_NAME_SORTED = JOIN_PARAMS + JOIN_ON_CONDITION + PART_NAME_FILTER + COMBINED_SORT;
+    public static final String SEARCH_BY_DESCRIPTION_SORTED = JOIN_PARAMS + JOIN_ON_CONDITION + PART_DESCRIPTION_FILTER + COMBINED_SORT;
 
 
     private final JdbcTemplate jdbcOperations;
@@ -76,7 +86,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public GiftCertificate getByID(long ID) {
-        return jdbcOperations.queryForObject(READ_BY_ID, new GiftCertificateMapping(), ID);//TODO build exception hierarchy
+        try {
+            return jdbcOperations.queryForObject(READ_BY_ID, new GiftCertificateMapping(), ID);
+        }
+        catch (Exception e){
+            //TODO build exception hierarchy
+        }
+        return null;
     }
 
     @Override
@@ -102,7 +118,37 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                                                                       String nameSortOrder,
                                                                       String dateSortOrder){
         CertificateResponseDtoMapper mapper = new CertificateResponseDtoMapper();
+        List<String> args = new ArrayList<>();
+        Optional.ofNullable(tagName).ifPresent(args::add);
+        Optional.ofNullable(namePart).ifPresent(args::add);
+        Optional.ofNullable(descriptionPart).ifPresent(args::add);
+        Optional.ofNullable(nameSortOrder).ifPresent(args::add);
+        Optional.ofNullable(dateSortOrder).ifPresent(args::add);
 
-        return jdbcOperations.query(SEARCH_BY_GC_NAME_PART, (PreparedStatementSetter) ps -> ps.setObject(1,"%"+namePart+"%"), mapper);
+        Map<List<String>,String> params = new HashMap<>();
+        Map<String,PreparedStatementSetter> mapping = new HashMap<>();
+        params.put(Collections.emptyList(),READ_ALL);
+        params.put(Arrays.asList(tagName),SEARCH_BY_TAG_NAME);
+        params.put(Arrays.asList(namePart),SEARCH_BY_GC_NAME_PART);
+        params.put(Arrays.asList(descriptionPart),SEARCH_BY_GC_DESCRIPTION_PART);
+        params.put(Arrays.asList(tagName,namePart),SEARCH_BY_TAG_AND_NAME);
+        params.put(Arrays.asList(tagName,descriptionPart),SEARCH_BY_TAG_AND_DESCRIPTION);
+        params.put(Arrays.asList(tagName,descriptionPart,nameSortOrder,dateSortOrder),SEARCH_BY_TAG_AND_DESCRIPTION_SORTED);
+        params.put(Arrays.asList(tagName,namePart,nameSortOrder,dateSortOrder),SEARCH_BY_TAG_AND_NAME_SORTED);
+        params.put(Arrays.asList(namePart,nameSortOrder,dateSortOrder),SEARCH_BY_NAME_SORTED);
+        params.put(Arrays.asList(descriptionPart,nameSortOrder,dateSortOrder),SEARCH_BY_DESCRIPTION_SORTED);
+        mapping.put(READ_ALL,(ps)->{});
+        mapping.put(SEARCH_BY_TAG_NAME,ps->ps.setObject(1,tagName));
+        mapping.put(SEARCH_BY_GC_NAME_PART,ps->ps.setObject(1,"%"+namePart+"%"));
+        mapping.put(SEARCH_BY_GC_DESCRIPTION_PART,ps->ps.setObject(1,"%"+descriptionPart+"%"));
+        mapping.put(SEARCH_BY_TAG_AND_NAME,ps->{ps.setObject(1,tagName);ps.setObject(2,"%"+namePart+"%");});
+        mapping.put(SEARCH_BY_TAG_AND_DESCRIPTION,ps->{ps.setObject(1,tagName);ps.setObject(2,"%"+descriptionPart+"%");});;
+        mapping.put(SEARCH_BY_TAG_AND_DESCRIPTION_SORTED,ps->{ps.setObject(1,tagName);ps.setObject(2,"%"+descriptionPart+"%");ps.setObject(3,nameSortOrder);ps.setObject(4,dateSortOrder);});
+        mapping.put(SEARCH_BY_TAG_AND_NAME_SORTED,ps->{ps.setObject(1,tagName);ps.setObject(2,"%"+namePart+"%");ps.setObject(3,nameSortOrder);ps.setObject(4,dateSortOrder);});
+        mapping.put(SEARCH_BY_NAME_SORTED,ps->{ps.setObject(1,"%"+namePart+"%");ps.setObject(2,nameSortOrder);ps.setObject(3,dateSortOrder);});
+        mapping.put(SEARCH_BY_DESCRIPTION_SORTED,ps->{ps.setObject(1,"%"+descriptionPart+"%");ps.setObject(2,nameSortOrder);ps.setObject(3,dateSortOrder);});
+        String query = params.get(args);
+        return jdbcOperations.query(params.get(args),mapping.get(query), mapper);
     }
+
 }

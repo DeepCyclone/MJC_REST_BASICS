@@ -11,8 +11,11 @@ import com.epam.esm.service.converter.CertificateDtoConverter;
 import com.epam.esm.service.converter.TagDtoConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +27,7 @@ public class GiftCertificateService {
     private final TagRepository tagRepository;
     private final TagDtoConverter tagConverter;
     private final CertificateDtoConverter certificateConverter;
+
 
     @Autowired
     public GiftCertificateService(GiftCertificateRepository certificateRepository,
@@ -46,7 +50,7 @@ public class GiftCertificateService {
         GiftCertificate certificate = certificateConverter.convertFromDto(certificateDto);
         GiftCertificate baseCert =  certificateRepository.create(certificate);
         List<Tag> tags = saveAssociatedTags(certificateDto.getAssociatedTags());
-        linkAssociatedTags(baseCert.getId(),tags);
+        certificateRepository.linkAssociatedTags(baseCert.getId(),tags);
         return baseCert;
     }
 
@@ -55,18 +59,22 @@ public class GiftCertificateService {
         certificateRepository.deleteByID(ID);
     }
 
-    @Transactional
-    public void update(GiftCertificateDto certificateDtoPatch,long certificateID){
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public boolean update(GiftCertificateDto certificateDtoPatch,long certificateID){
         GiftCertificate originalCertificate = getByID(certificateID);
-        Optional.ofNullable(certificateDtoPatch.getName()).ifPresent(originalCertificate::setName);
-        Optional.ofNullable(certificateDtoPatch.getDescription()).ifPresent(originalCertificate::setDescription);
-        Optional.ofNullable(certificateDtoPatch.getPrice()).ifPresent(originalCertificate::setPrice);
-        Optional.ofNullable(certificateDtoPatch.getDuration()).ifPresent(originalCertificate::setDuration);
-        //TODO boolean or exception
-        List<Tag> tags = saveAssociatedTags(certificateDtoPatch.getAssociatedTags());
-        linkAssociatedTags(certificateID,tags);
-        certificateRepository.update(originalCertificate);
-
+        if(originalCertificate!=null) {
+            Optional.ofNullable(certificateDtoPatch.getName()).ifPresent(originalCertificate::setName);
+            Optional.ofNullable(certificateDtoPatch.getDescription()).ifPresent(originalCertificate::setDescription);
+            Optional.ofNullable(certificateDtoPatch.getPrice()).ifPresent(originalCertificate::setPrice);
+            Optional.ofNullable(certificateDtoPatch.getDuration()).ifPresent(originalCertificate::setDuration);
+            //TODO boolean or exception
+            if (certificateDtoPatch.getAssociatedTags() != null) {
+                List<Tag> tags = saveAssociatedTags(certificateDtoPatch.getAssociatedTags());
+                certificateRepository.linkAssociatedTags(certificateID, tags);
+            }
+            return certificateRepository.update(originalCertificate);
+        }
+        return false;//throw exception in case of object not found and handle it in controller advice
     }
 
     private List<Tag> saveAssociatedTags(List<TagDto> tagsDtos){
@@ -75,10 +83,6 @@ public class GiftCertificateService {
             tags.add(tagRepository.create(tagConverter.convertFromDto(dto)));
         }
         return tags;
-    }
-
-    private void linkAssociatedTags(long certificateID,List<Tag> tags){
-        certificateRepository.linkAssociatedTags(certificateID,tags);
     }
 
 

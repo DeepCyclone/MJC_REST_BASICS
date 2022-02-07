@@ -10,6 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 
 import javax.sql.DataSource;
 
+@PropertySource("classpath:db.properties")
 @Configuration
 public class DatabaseConfig {
 
@@ -21,14 +22,16 @@ public class DatabaseConfig {
     private String username;
     @Value("${db.password}")
     private String password;
+    @Value("${db.maxPoolSize}")
+    private int maxPoolSize;
     @Bean
     public DataSource hikariDataSource(){
         HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setDriverClassName("com.mysql.jdbc.Driver");
-        hikariConfig.setUsername("root");
-        hikariConfig.setPassword("root");
-        hikariConfig.setJdbcUrl("jdbc:mysql://localhost:3306/certificatessystem");
-        hikariConfig.setMaximumPoolSize(5);
+        hikariConfig.setDriverClassName(driverClassName);
+        hikariConfig.setUsername(username);
+        hikariConfig.setPassword(password);
+        hikariConfig.setJdbcUrl(connectionURL);
+        hikariConfig.setMaximumPoolSize(maxPoolSize);
         HikariDataSource dataSource = new HikariDataSource(hikariConfig);
         return dataSource;
     }

@@ -6,10 +6,13 @@ import com.epam.esm.exception.ObjectNotFoundException;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.service.impl.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -35,9 +38,27 @@ public class GiftCertificateController {
                 descriptionPart,
                 dateSortOrder,
                 nameSortOrder);
-        System.out.println(dtos);
         return dtos;
     }
+
+//    @GetMapping
+//    public List<GiftCertificateResponseDto> getAllByTagName(@RequestParam String tagName)
+//    {
+//        return null;//TODO transfer it to tagController
+//    }
+//
+//
+//    @GetMapping
+//    public List<GiftCertificateResponseDto> getAllByNamePart(@RequestParam String namePart)
+//    {
+//        return null;
+//    }
+//
+//    @GetMapping
+//    public List<GiftCertificateResponseDto> getAllByRequestParams(@RequestParam Map<String,String> params)
+//    {
+//        return null;
+//    }
 
     @GetMapping(value = "/{id:\\d+}")
     public GiftCertificate getByID(@PathVariable long id){
@@ -50,22 +71,19 @@ public class GiftCertificateController {
 
     @DeleteMapping(value = "/{id:\\d+}")
     public void deleteCertificate(@PathVariable long id){
-        service.deleteByID(id);
+        service.deleteByID(id);//TODO NOT FOUND OR NO CONTENT
     }
 
-    @PatchMapping(value = "/{id:\\d+}")
-    public void updateCertificate(@PathVariable long id,@RequestBody GiftCertificateDto certificateDtoPatch){
-        service.update(certificateDtoPatch,id);
+    @PutMapping(value = "/{id:\\d+}")
+    public ResponseEntity<GiftCertificateResponseDto> updateCertificate(@PathVariable long id, @RequestBody GiftCertificateDto certificateDtoPatch){
+        HttpStatus status = service.update(certificateDtoPatch,id)?HttpStatus.OK:HttpStatus.NOT_MODIFIED;
+        return new ResponseEntity<>(status);//TODO update in terms of put logic
+        //TODO 201-CREATED,409-CONFLICT
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public GiftCertificate createCertificate(@RequestBody GiftCertificateDto certificateDto){
-//        for(TagDto dto:certificateDtoPatch.getAssociatedTags()) {
-//            tags.add(tagRepository.create(converter.convertFromDto(dto)));
-//        }
-//        linkAssociatedTags(certificateID,tags);
-//        GiftCertificate certificate = converter.convertFromDto(certificateDto);
-        return service.addEntity(certificateDto);//responseDtoMapping
+        return service.addEntity(certificateDto);//TODO 201-CREATED,409-CONFLICT
     }
 
 }

@@ -17,9 +17,11 @@ public class HandlerConfig extends ResponseEntityExceptionHandler {
         return new ErrorDescriptor(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
 
+
 //    @ExceptionHandler(DataAccessException.class)
 //    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 //    public Object a(){
 //        return null;
 //    }
+
 }
