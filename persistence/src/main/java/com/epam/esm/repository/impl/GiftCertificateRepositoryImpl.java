@@ -103,6 +103,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                                                                       String dateSortOrder){
         CertificateResponseDtoMapper mapper = new CertificateResponseDtoMapper();
 
-        return jdbcOperations.query(SEARCH_BY_GC_NAME_PART, mapper, namePart);
+        return jdbcOperations.query(SEARCH_BY_GC_NAME_PART, (PreparedStatementSetter) ps -> ps.setObject(1,"%"+namePart+"%"), mapper);
     }
 }
