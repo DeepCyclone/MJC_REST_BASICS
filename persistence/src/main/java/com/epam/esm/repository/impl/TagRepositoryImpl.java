@@ -46,7 +46,7 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public void update(Tag object) {
+    public boolean update(Tag object) {
         throw new UnsupportedOperationException();
     }
 
@@ -56,12 +56,22 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public void deleteByID(long ID) {
-        jdbcTemplate.update(DELETE_BY_ID,ID);
+    public boolean deleteByID(long ID) {
+        return jdbcTemplate.update(DELETE_BY_ID,ID) == 1;
     }
 
     @Override
     public List<Tag> fetchAssociatedTags(long certificateID) {
         return jdbcTemplate.query(FETCH_ASSOCIATED_TAGS,new TagMapping(),certificateID);
+    }
+
+    @Override
+    public Tag getByName(String name) {
+        return null;
+    }
+
+    @Override
+    public boolean deleteByName(String name) {
+        return false;
     }
 }
