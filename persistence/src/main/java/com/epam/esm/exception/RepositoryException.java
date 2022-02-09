@@ -1,4 +1,14 @@
 package com.epam.esm.exception;
 
-public class RepositoryException extends Throwable{
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
+public class RepositoryException extends RuntimeException{
+
+    private final String errorCode;
+    private final String errorMsg;
+
+
 }

@@ -24,6 +24,7 @@ public class DatabaseConfig {
     private String password;
     @Value("${db.maxPoolSize}")
     private int maxPoolSize;
+    @Profile("prod")
     @Bean
     public DataSource hikariDataSource(){
         HikariConfig hikariConfig = new HikariConfig();

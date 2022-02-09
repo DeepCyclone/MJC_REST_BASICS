@@ -1,7 +1,10 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.dto.request.TagDto;
+import com.epam.esm.dto.response.GiftCertificateResponseDto;
+import com.epam.esm.dto.response.TagResponseDto;
+import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repository.TagRepository;
-import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,14 +22,14 @@ public class TagService {
         this.repository = repository;
     }
 
-    public List<Tag> getAll(){
+    public List<TagResponseDto> getAll(){
         return repository.readAll();
     }
-    public Tag getByID(long ID){
+    public TagResponseDto getByID(long ID){
         return repository.getByID(ID);
     }
-    public void addEntity(Tag tag){
-        repository.create(tag);
+    public TagResponseDto addEntity(TagDto tag) {
+        return repository.create(tag);
     }
 
     @Transactional
@@ -34,8 +37,8 @@ public class TagService {
         repository.deleteByID(ID);
     }
 
-    @Transactional
-    public void update(Tag tag){
-        repository.update(tag);
+    public List<GiftCertificateResponseDto> getAssociatedCertificates(long ID){
+        return null;
     }
+
 }

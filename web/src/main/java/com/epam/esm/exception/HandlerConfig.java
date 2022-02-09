@@ -1,6 +1,6 @@
 package com.epam.esm.exception;
 
-import org.springframework.dao.DataAccessException;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,18 +10,19 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class HandlerConfig extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(ObjectNotFoundException.class)
+    @ExceptionHandler(RepositoryException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public ErrorDescriptor objectNotFound(ObjectNotFoundException e){
-        return new ErrorDescriptor(HttpStatus.NOT_FOUND.value(), e.getMessage());
+    public ErrorDescriptor objectNotFound(RepositoryException e){
+        return new ErrorDescriptor(e.getErrorCode(),e.getErrorMsg());
     }
 
+    @ExceptionHandler(ServiceException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public ErrorDescriptor updateError(ServiceException e){
+        return new ErrorDescriptor(e.getErrorCode(),e.getErrorMsg());
+    }
 
-//    @ExceptionHandler(DataAccessException.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public Object a(){
-//        return null;
-//    }
 
 }

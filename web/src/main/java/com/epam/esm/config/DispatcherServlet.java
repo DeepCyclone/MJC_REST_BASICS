@@ -1,4 +1,4 @@
-package com.epam.esm.controller;
+package com.epam.esm.config;
 
 import com.epam.esm.config.RootConfig;
 import com.epam.esm.config.WebConfig;
@@ -19,12 +19,7 @@ public class DispatcherServlet extends AbstractAnnotationConfigDispatcherServlet
 
     @Override
     protected String[] getServletMappings() {
-        return new String[]{"/"};
+        return new String[]{"/v1/*"};
     }
 
-//    @Override
-//    protected void customizeRegistration(ServletRegistration.Dynamic registration) {
-//        super.customizeRegistration(registration);
-//        registration.
-//    }
 }

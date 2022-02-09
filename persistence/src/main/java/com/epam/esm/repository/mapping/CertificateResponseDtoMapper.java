@@ -15,11 +15,10 @@ import java.util.List;
 
 public class CertificateResponseDtoMapper implements ResultSetExtractor<List<GiftCertificateResponseDto>> {
 
-    GiftCertificateResponseDto gcResponseDto = null;
+    private GiftCertificateResponseDto gcResponseDto = null;
 
     private void giftCertificateStructureCreator(ResultSet rs,long gcID) throws SQLException{
         gcResponseDto = new GiftCertificateResponseDto();
-        gcResponseDto.setAssociatedTags(new ArrayList<>());
         gcResponseDto.setId(gcID);
         gcResponseDto.setName(rs.getString("gc_name"));
         gcResponseDto.setDescription(rs.getString("gc_description"));
@@ -27,6 +26,7 @@ public class CertificateResponseDtoMapper implements ResultSetExtractor<List<Gif
         gcResponseDto.setPrice(rs.getBigDecimal("gc_price"));
         gcResponseDto.setCreateDate(new Date(rs.getTimestamp("gc_create_date").getTime()));
         gcResponseDto.setLastUpdateDate(new Date(rs.getTimestamp("gc_last_update_date").getTime()));
+        gcResponseDto.setAssociatedTags(new ArrayList<>());
     }
 
     private TagResponseDto tagStructureCreator(ResultSet rs) throws SQLException {

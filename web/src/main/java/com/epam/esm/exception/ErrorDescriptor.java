@@ -1,15 +1,15 @@
 package com.epam.esm.exception;
 
 public class ErrorDescriptor {
-    private final int errorCode;
+    private final String errorCode;
     private final String errorMsg;
 
-    public ErrorDescriptor(int errorCode, String errorMsg) {
+    public ErrorDescriptor(String errorCode, String errorMsg) {
         this.errorCode = errorCode;
         this.errorMsg = errorMsg;
     }
 
-    public int getErrorCode() {
+    public String getErrorCode() {
         return errorCode;
     }
 

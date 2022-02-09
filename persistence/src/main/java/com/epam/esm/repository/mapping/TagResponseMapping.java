@@ -1,17 +1,15 @@
 package com.epam.esm.repository.mapping;
 
 import com.epam.esm.dto.response.TagResponseDto;
-import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.repository.model.Tag;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class TagMapping implements RowMapper<Tag> {
+public class TagResponseMapping implements RowMapper<TagResponseDto> {
     @Override
-    public Tag mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Tag tag = new Tag();
+    public TagResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+        TagResponseDto tag = new TagResponseDto();
         tag.setId(rs.getLong("t_id"));
         tag.setName(rs.getString("t_name"));
         return tag;

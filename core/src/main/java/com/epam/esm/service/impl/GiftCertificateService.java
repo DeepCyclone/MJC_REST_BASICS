@@ -3,21 +3,22 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.dto.response.GiftCertificateResponseDto;
+import com.epam.esm.dto.response.TagResponseDto;
+import com.epam.esm.exception.ErrorCode;
+import com.epam.esm.exception.RepositoryException;
+import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.TagRepository;
-import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.repository.model.Tag;
+import com.epam.esm.repository.mapping.CertificateResponseDtoMapper;
 import com.epam.esm.service.converter.CertificateDtoConverter;
 import com.epam.esm.service.converter.TagDtoConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -39,54 +40,58 @@ public class GiftCertificateService {
         this.certificateConverter = certificateConverter;
     }
 
-    public List<GiftCertificate> getAll(){
+    public List<GiftCertificateResponseDto> getAll(){
         return certificateRepository.readAll();
     }
-    public GiftCertificate getByID(long ID){
+    public GiftCertificateResponseDto getByID(long ID) {
         return certificateRepository.getByID(ID);
     }
 
-    public GiftCertificate addEntity(GiftCertificateDto certificateDto){
-        GiftCertificate certificate = certificateConverter.convertFromDto(certificateDto);
-        GiftCertificate baseCert =  certificateRepository.create(certificate);
-        List<Tag> tags = saveAssociatedTags(certificateDto.getAssociatedTags());
-        certificateRepository.linkAssociatedTags(baseCert.getId(),tags);
+    public GiftCertificateResponseDto addEntity(GiftCertificateDto certificateDto) throws RepositoryException {
+        GiftCertificateResponseDto baseCert =  certificateRepository.create(certificateDto);
+        List<TagResponseDto> savedTags = saveAssociatedTags(certificateDto.getAssociatedTags());
+        baseCert.getAssociatedTags().addAll(savedTags);
+        certificateRepository.linkAssociatedTags(baseCert.getId(),savedTags);
         return baseCert;
     }
 
     @Transactional
-    public void deleteByID(long ID){
-        certificateRepository.deleteByID(ID);
+    public boolean deleteByID(long ID){
+        return certificateRepository.deleteByID(ID);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public boolean update(GiftCertificateDto certificateDtoPatch,long certificateID){
-        GiftCertificate originalCertificate = getByID(certificateID);
-        if(originalCertificate!=null) {
-            Optional.ofNullable(certificateDtoPatch.getName()).ifPresent(originalCertificate::setName);
-            Optional.ofNullable(certificateDtoPatch.getDescription()).ifPresent(originalCertificate::setDescription);
-            Optional.ofNullable(certificateDtoPatch.getPrice()).ifPresent(originalCertificate::setPrice);
-            Optional.ofNullable(certificateDtoPatch.getDuration()).ifPresent(originalCertificate::setDuration);
-            //TODO boolean or exception
-            if (certificateDtoPatch.getAssociatedTags() != null) {
-                List<Tag> tags = saveAssociatedTags(certificateDtoPatch.getAssociatedTags());
-                certificateRepository.linkAssociatedTags(certificateID, tags);
-            }
-            return certificateRepository.update(originalCertificate);
+    @Transactional
+    public GiftCertificateResponseDto update(GiftCertificateDto certificateDtoPatch, long certificateID) {
+        GiftCertificateResponseDto originalCertificate = getByID(certificateID);
+        Optional.ofNullable(certificateDtoPatch.getName()).ifPresent(originalCertificate::setName);
+        Optional.ofNullable(certificateDtoPatch.getDescription()).ifPresent(originalCertificate::setDescription);
+        Optional.ofNullable(certificateDtoPatch.getPrice()).ifPresent(originalCertificate::setPrice);
+        Optional.ofNullable(certificateDtoPatch.getDuration()).ifPresent(originalCertificate::setDuration);
+        if (certificateDtoPatch.getAssociatedTags() != null) {
+            List<TagResponseDto> tags = saveAssociatedTags(certificateDtoPatch.getAssociatedTags());
+            certificateRepository.linkAssociatedTags(certificateID, tags);
         }
-        return false;//throw exception in case of object not found and handle it in controller advice
+        return certificateRepository.update(certificateConverter.fromResponseToRequestDto(originalCertificate),certificateID);
     }
 
-    private List<Tag> saveAssociatedTags(List<TagDto> tagsDtos){
-        List<Tag> tags = new ArrayList<>();
+    private List<TagResponseDto> saveAssociatedTags(List<TagDto> tagsDtos) throws RepositoryException {
+        List<TagResponseDto> tags = new ArrayList<>();
         for(TagDto dto:tagsDtos) {
-            tags.add(tagRepository.create(tagConverter.convertFromDto(dto)));
+            tags.add(tagRepository.create(dto));
         }
         return tags;
     }
 
+    private void detachAssociatedTags(long certificateID){
+        certificateRepository.detachAssociatedTags(certificateID);
+    }
 
-    public List<GiftCertificateResponseDto> handleParametrizedGetRequest(String tagName, String namePart, String descriptionPart, String dateSortOrder, String nameSortOrder){
-        return certificateRepository.handleParametrizedRequest(tagName, namePart, descriptionPart, dateSortOrder, nameSortOrder);
+
+    public List<GiftCertificateResponseDto> handleParametrizedGetRequest(Map<String,String> params){
+        return certificateRepository.handleParametrizedRequest(params);
+    }
+
+    public GiftCertificateResponseDto getByName(String name) {
+        return null;
     }
 }
