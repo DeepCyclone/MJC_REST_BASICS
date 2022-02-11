@@ -7,54 +7,43 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
-public class CertificateDtoConverter implements ConverterTemplate<GiftCertificate,GiftCertificateDto> {
-    @Override
-    public GiftCertificate convertFromDto(GiftCertificateDto dto) {
-        return GiftCertificate.builder().
-                name(dto.getName()).
-                description(dto.getDescription()).
-                price(dto.getPrice()).
-                duration(dto.getDuration()).
-                build();
-    }
+public class CertificateDtoConverter implements ConverterTemplate<GiftCertificate,GiftCertificateDto,GiftCertificateResponseDto> {
+
 
     @Override
-    public GiftCertificateDto convertToDto(GiftCertificate object) {
-        return null;
-    }
-
-    public GiftCertificateResponseDto convertToResponseDto(GiftCertificate object){
-        return GiftCertificateResponseDto.builder().
-                id(object.getId()).
-                name(object.getName()).
-                description(object.getDescription()).
-                duration(object.getDuration()).
-                price(object.getPrice()).
-                createDate(new Date(object.getCreateDate().getNanos())).
-                lastUpdateDate(new Date(object.getLastUpdateDate().getNanos())).
-                build();
-    }
-
-    public GiftCertificate convertFromResponseDto(GiftCertificateResponseDto dto) {
+    public GiftCertificate convertFromRequestDto(GiftCertificateDto dto) {
         return GiftCertificate.builder().
                 id(dto.getId()).
                 name(dto.getName()).
                 description(dto.getDescription()).
-                duration(dto.getDuration()).
                 price(dto.getPrice()).
-                createDate(new Timestamp(dto.getCreateDate().getTime())).
-                lastUpdateDate(new Timestamp(dto.getLastUpdateDate().getTime())).
-                        build();
+                duration(dto.getDuration()).
+                build();
     }
 
-    public GiftCertificateDto fromResponseToRequestDto(GiftCertificateResponseDto dto){
-        return GiftCertificateDto.builder().
-                name(dto.getName()).
-                description(dto.getDescription()).
-                duration(dto.getDuration()).
-                price(dto.getPrice()).
+    @Override
+    public GiftCertificateResponseDto convertToResponseDto(GiftCertificate object) {
+        return GiftCertificateResponseDto.builder().
+                id(object.getId()).
+                name(object.getName()).
+                description(object.getDescription()).
+                price(object.getPrice()).
+                duration(object.getDuration()).
+                createDate(new Date(object.getCreateDate().getTime())).
+                lastUpdateDate(new Date(object.getLastUpdateDate().getTime())).
                 build();
+    }
+
+    @Override
+    public List<GiftCertificateResponseDto> convertToResponseDtos(List<GiftCertificate> objects) {
+        List<GiftCertificateResponseDto> dtos = new ArrayList<>();
+        for(GiftCertificate gc:objects){
+            dtos.add(convertToResponseDto(gc));
+        }
+        return dtos;
     }
 }

@@ -10,6 +10,8 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.mapping.CertificateResponseDtoMapper;
+import com.epam.esm.repository.model.GiftCertificate;
+import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.converter.CertificateDtoConverter;
 import com.epam.esm.service.converter.TagDtoConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,16 +42,22 @@ public class GiftCertificateService {
         this.certificateConverter = certificateConverter;
     }
 
-    public List<GiftCertificateResponseDto> getAll(){
-        return certificateRepository.readAll();
+    public List<GiftCertificate> getAll(){
+        List<GiftCertificate> certificates = certificateRepository.readAll();
+        for(GiftCertificate certificate:certificates){
+            certificate.setAssociatedTags(tagRepository.fetchAssociatedTags(certificate.getId()));
+        }
+        return certificates;
     }
-    public GiftCertificateResponseDto getByID(long ID) {
-        return certificateRepository.getByID(ID);
+    public GiftCertificate getByID(long ID) {
+        GiftCertificate certificate = certificateRepository.getByID(ID);
+        certificate.setAssociatedTags(tagRepository.fetchAssociatedTags(ID));
+        return certificate;
     }
 
-    public GiftCertificateResponseDto addEntity(GiftCertificateDto certificateDto) throws RepositoryException {
-        GiftCertificateResponseDto baseCert =  certificateRepository.create(certificateDto);
-        List<TagResponseDto> savedTags = saveAssociatedTags(certificateDto.getAssociatedTags());
+    public GiftCertificate addEntity(GiftCertificate certificateDto) throws RepositoryException {
+        GiftCertificate baseCert =  certificateRepository.create(certificateDto);
+        List<Tag> savedTags = saveAssociatedTags(certificateDto.getAssociatedTags());
         baseCert.getAssociatedTags().addAll(savedTags);
         certificateRepository.linkAssociatedTags(baseCert.getId(),savedTags);
         return baseCert;
@@ -61,25 +69,26 @@ public class GiftCertificateService {
     }
 
     @Transactional
-    public GiftCertificateResponseDto update(GiftCertificateDto certificateDtoPatch, long certificateID) {
-        GiftCertificateResponseDto originalCertificate = getByID(certificateID);
-        Optional.ofNullable(certificateDtoPatch.getName()).ifPresent(originalCertificate::setName);
-        Optional.ofNullable(certificateDtoPatch.getDescription()).ifPresent(originalCertificate::setDescription);
-        Optional.ofNullable(certificateDtoPatch.getPrice()).ifPresent(originalCertificate::setPrice);
-        Optional.ofNullable(certificateDtoPatch.getDuration()).ifPresent(originalCertificate::setDuration);
-        if (certificateDtoPatch.getAssociatedTags() != null) {
-            List<TagResponseDto> tags = saveAssociatedTags(certificateDtoPatch.getAssociatedTags());
+    public GiftCertificate update(GiftCertificate certificatePatch, long certificateID) {
+        GiftCertificate originalCertificate = getByID(certificateID);
+        Optional.ofNullable(certificatePatch.getName()).ifPresent(originalCertificate::setName);
+        Optional.ofNullable(certificatePatch.getDescription()).ifPresent(originalCertificate::setDescription);
+        Optional.ofNullable(certificatePatch.getPrice()).ifPresent(originalCertificate::setPrice);
+        Optional.ofNullable(certificatePatch.getDuration()).ifPresent(originalCertificate::setDuration);
+        if (certificatePatch.getAssociatedTags() != null) {
+            List<Tag> tags = saveAssociatedTags(certificatePatch.getAssociatedTags());
             certificateRepository.linkAssociatedTags(certificateID, tags);
         }
-        return certificateRepository.update(certificateConverter.fromResponseToRequestDto(originalCertificate),certificateID);
+        certificateRepository.update(originalCertificate,certificateID);
+        return getByID(certificateID);//TODO rethink
     }
 
-    private List<TagResponseDto> saveAssociatedTags(List<TagDto> tagsDtos) throws RepositoryException {
-        List<TagResponseDto> tags = new ArrayList<>();
-        for(TagDto dto:tagsDtos) {
-            tags.add(tagRepository.create(dto));
+    private List<Tag> saveAssociatedTags(List<Tag> tags) {
+        List<Tag> tagsIdentifiable = new ArrayList<>();
+        for(Tag tag:tags) {
+            tagsIdentifiable.add(tagRepository.create(tag));
         }
-        return tags;
+        return tagsIdentifiable;
     }
 
     private void detachAssociatedTags(long certificateID){
@@ -87,11 +96,11 @@ public class GiftCertificateService {
     }
 
 
-    public List<GiftCertificateResponseDto> handleParametrizedGetRequest(Map<String,String> params){
+    public List<GiftCertificate> handleParametrizedGetRequest(Map<String,String> params){
         return certificateRepository.handleParametrizedRequest(params);
     }
 
-    public GiftCertificateResponseDto getByName(String name) {
+    public GiftCertificate getByName(String name) {
         return null;
     }
 }

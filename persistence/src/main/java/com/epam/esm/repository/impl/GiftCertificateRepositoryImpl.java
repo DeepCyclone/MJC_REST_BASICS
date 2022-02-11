@@ -7,6 +7,9 @@ import com.epam.esm.exception.ErrorCodeHolder;
 import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.mapping.CertificateResponseDtoMapper;
+import com.epam.esm.repository.mapping.GiftCertificateMapping;
+import com.epam.esm.repository.model.GiftCertificate;
+import com.epam.esm.repository.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,8 +24,7 @@ import java.util.Map;
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
 
-    public static final String READ_ALL = "SELECT gc_id,gc_name,gc_description,gc_price,gc_duration,gc_create_date,gc_last_update_date,t_id,t_name FROM gift_certificate" +
-            " JOIN (SELECT t_name,tmgc_gc_id,t_id FROM tag JOIN `tag_m2m_gift_certificate` ON t_id = tmgc_t_id) AS ix ON gc_id = ix.tmgc_gc_id";
+    public static final String READ_ALL = "SELECT * FROM gift_certificate";
     public static final String ID_FILTER = " WHERE gc_id = ?";
     public static final String READ_BY_ID = READ_ALL + ID_FILTER;
     public static final String DELETE_ENTRY = "DELETE FROM gift_certificate WHERE gc_id = ?";
@@ -57,7 +59,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public GiftCertificateResponseDto create(GiftCertificateDto object) throws RepositoryException {
+    public GiftCertificate create(GiftCertificate object) throws RepositoryException {
         SimpleJdbcInsertOperations simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcOperations);
         simpleJdbcInsert.withTableName("gift_certificate").usingGeneratedKeyColumns("gc_id");
         Map<String,Object> params = new HashMap<>();
@@ -70,31 +72,23 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public List<GiftCertificateResponseDto> readAll() {
-        return jdbcOperations.query(READ_ALL,new CertificateResponseDtoMapper());
+    public List<GiftCertificate> readAll() {
+        return jdbcOperations.query(READ_ALL,new GiftCertificateMapping());
     }
 
     @Override
-    public GiftCertificateResponseDto update(GiftCertificateDto object,long ID) {
-       if(!(jdbcOperations.update(UPDATE_QUERY,
+    public boolean update(GiftCertificate object,long ID) {
+       return jdbcOperations.update(UPDATE_QUERY,
                 object.getName(),
                 object.getDescription(),
                 object.getPrice(),
                 object.getDuration(),
-                ID) == MIN_AFFECTED_ROWS)){
-           throw new RepositoryException(ErrorCodeHolder.CERTIFICATE_UPDATE_OP_ERROR,"cannot update object with ID = "+ID);
-       }
-       return getByID(ID);
+                ID) == MIN_AFFECTED_ROWS;
     }
 
     @Override
-    public GiftCertificateResponseDto getByID(long ID){
-        try {
-            return jdbcOperations.query(READ_BY_ID, new CertificateResponseDtoMapper(), ID).stream().findFirst().orElse(null);
-        }
-        catch (DataAccessException e){
-            throw new RepositoryException(ErrorCodeHolder.CERTIFICATE_NOT_FOUND,"Cannot fetch object with ID = " + ID);
-        }
+    public GiftCertificate getByID(long ID){
+        return jdbcOperations.queryForObject(READ_BY_ID, new GiftCertificateMapping(), ID);
     }
 
     @Override
@@ -103,12 +97,12 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public void linkAssociatedTags(long certificateID, List<TagResponseDto> tags) {
+    public void linkAssociatedTags(long certificateID, List<Tag> tags) {
         SimpleJdbcInsertOperations simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcOperations);
         simpleJdbcInsert.withTableName("tag_m2m_gift_certificate");
         Map<String,Object> params = new HashMap<>();
         params.put("tmgc_gc_id",certificateID);
-        for(TagResponseDto tag:tags){
+        for(Tag tag:tags){
             params.put("tmgc_t_id",tag.getId());
             simpleJdbcInsert.execute(params);
         }
@@ -116,11 +110,16 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public boolean detachAssociatedTags(long certificateID) {
-        return jdbcOperations.update(DETACH_ASSOCIATED_TAGS,certificateID) == MIN_AFFECTED_ROWS;
+        return false;
     }
 
+//    @Override
+//    public boolean detachAssociatedTags(long certificateID) {
+//        return jdbcOperations.update(DETACH_ASSOCIATED_TAGS,certificateID) == MIN_AFFECTED_ROWS;
+//    }
+
     @Override
-    public List<GiftCertificateResponseDto> handleParametrizedRequest(Map<String, String> map) {
+    public List<GiftCertificate> handleParametrizedRequest(Map<String, String> map) {
         return null;
     }
 
@@ -159,7 +158,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 //    }
 
     @Override
-    public GiftCertificateResponseDto getByName(String name) {
+    public GiftCertificate getByName(String name) {
         return null;
     }
 }

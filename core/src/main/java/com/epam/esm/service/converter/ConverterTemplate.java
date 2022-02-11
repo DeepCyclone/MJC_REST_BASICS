@@ -1,8 +1,15 @@
 package com.epam.esm.service.converter;
 
 
-//@params A - entity,B - dto
-interface ConverterTemplate <A,B>{
-    A convertFromDto(B dto);
-    B convertToDto(A object);
+import java.util.List;
+
+/*
+*
+*
+* */
+interface ConverterTemplate <A,B,C>{
+    A convertFromRequestDto(B dto);
+    C convertToResponseDto(A object);
+
+    List<C> convertToResponseDtos(List<A> objects);
 }

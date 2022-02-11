@@ -6,6 +6,6 @@ import com.epam.esm.repository.model.Tag;
 
 import java.util.List;
 
-public interface TagRepository extends GenericRepository<TagDto, TagResponseDto>,Identifiable<TagResponseDto>,Nameable<TagResponseDto>{
-    List<TagResponseDto> fetchAssociatedTags(long certificateID);
+public interface TagRepository extends GenericRepository<Tag>,Identifiable<Tag>,Nameable<Tag>{
+    List<Tag> fetchAssociatedTags(long certificateID);
 }

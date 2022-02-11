@@ -6,6 +6,7 @@ import com.epam.esm.dto.response.TagResponseDto;
 import com.epam.esm.exception.ObjectNotFoundException;
 import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repository.model.GiftCertificate;
+import com.epam.esm.service.converter.CertificateDtoConverter;
 import com.epam.esm.service.impl.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -22,16 +22,21 @@ import java.util.Map;
 public class GiftCertificateController {
 
     private final GiftCertificateService service;
+    private final CertificateDtoConverter converter;
 
     @Autowired
-    public GiftCertificateController(GiftCertificateService service) {
+    public GiftCertificateController(GiftCertificateService service, CertificateDtoConverter converter) {
         this.service = service;
+        this.converter = converter;
     }
 
 
     @GetMapping
     public List<GiftCertificateResponseDto> getAll() {
-        return service.getAll();
+
+        List<GiftCertificate> certificates = service.getAll();
+        List<GiftCertificateResponseDto> dtos = converter.convertToResponseDtos(certificates);
+        return dtos;
     }
 
 //    @GetMapping
@@ -43,9 +48,9 @@ public class GiftCertificateController {
     @GetMapping(value = "/{id:\\d+}")
     public GiftCertificateResponseDto getByID(@PathVariable long id) throws RepositoryException {
 
-        GiftCertificateResponseDto giftCertificate = service.getByID(id);
-        if(giftCertificate == null){throw new ObjectNotFoundException("Object with ID:"+id+" wasn't found",id);}
-        return giftCertificate;
+        GiftCertificate giftCertificate = service.getByID(id);//NOT FOUND EXCEPTION
+        GiftCertificateResponseDto dto = converter.convertToResponseDto(giftCertificate);
+        return dto;
     }
 
     @GetMapping(value = "/{id:\\d+}/tags")
@@ -62,12 +67,15 @@ public class GiftCertificateController {
 
     @PutMapping(value = "/{id:\\d+}")
     public ResponseEntity<GiftCertificateResponseDto> updateCertificate(@PathVariable long id, @RequestBody GiftCertificateDto certificateDtoPatch) throws RepositoryException {
-        return new ResponseEntity<GiftCertificateResponseDto>(service.update(certificateDtoPatch,id),HttpStatus.CREATED);
+        GiftCertificate certificate = converter.convertFromRequestDto(certificateDtoPatch);
+        GiftCertificateResponseDto a = converter.convertToResponseDto(service.update(certificate,id));//TODO CONFLICT
+        return new ResponseEntity<GiftCertificateResponseDto>(a,HttpStatus.CREATED);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public GiftCertificateResponseDto createCertificate(@RequestBody GiftCertificateDto certificateDto) throws RepositoryException {
-        return service.addEntity(certificateDto);//TODO 201-CREATED,409-CONFLICT
+        GiftCertificate certificate = converter.convertFromRequestDto(certificateDto);
+        return converter.convertToResponseDto(service.addEntity(certificate));//TODO 201-CREATED,409-CONFLICT
     }
 
 }

@@ -1,11 +1,9 @@
 package com.epam.esm.repository.mapping;
 
-import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.dto.response.GiftCertificateResponseDto;
 import com.epam.esm.dto.response.TagResponseDto;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowCallbackHandler;
 
 import java.sql.Date;
 import java.sql.ResultSet;

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,4 +22,5 @@ public class GiftCertificate implements Serializable {
     private int duration;
     private Timestamp createDate;
     private Timestamp lastUpdateDate;
+    List<Tag> associatedTags;
 }

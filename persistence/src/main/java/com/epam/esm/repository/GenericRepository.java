@@ -6,16 +6,15 @@ import java.util.List;
 
 
 /*
-* Basic hierarchical interface,that describes avaliable operations on objects
+* Basic hierarchical interface,that describes available operations on objects
 * @params
-* X - request dto's
-* Y - response dto's
+
 * */
-public interface GenericRepository <X,Y>{
+public interface GenericRepository <X>{
     /*
     * Takes dto(X) object,places it in datasource,returns response dto object with additional info
      */
-    Y create(X object);
-    List<Y> readAll();
-    Y update(X object,long ID);
+    X create(X object);
+    List<X> readAll();
+    boolean update(X object,long ID);
 }

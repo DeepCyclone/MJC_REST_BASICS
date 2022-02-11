@@ -33,28 +33,28 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public TagResponseDto create(TagDto object) {
+    public Tag create(Tag object) {
         SimpleJdbcInsertOperations simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcTemplate);
         simpleJdbcInsert.withTableName("tag").usingGeneratedKeyColumns("t_id");
         Map<String,Object> paramsMap = new HashMap<>();
         paramsMap.put("t_name",object.getName());
         Number key = simpleJdbcInsert.executeAndReturnKey(paramsMap);
-        return getByID(key.longValue());//TODO
+        return getByID(key.longValue());
     }
 
     @Override
-    public List<TagResponseDto> readAll() {
-        return jdbcTemplate.query(READ_ALL,new TagResponseMapping());
+    public List<Tag> readAll() {
+        return jdbcTemplate.query(READ_ALL,new TagMapping());
     }
 
     @Override
-    public TagResponseDto update(TagDto object,long ID) {
+    public boolean update(Tag object,long ID) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public TagResponseDto getByID(long ID) {
-        return jdbcTemplate.queryForObject(READ_BY_ID, new TagResponseMapping(),ID);
+    public Tag getByID(long ID) {
+        return jdbcTemplate.queryForObject(READ_BY_ID, new TagMapping(),ID);
     }
 
     @Override
@@ -63,12 +63,12 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public List<TagResponseDto> fetchAssociatedTags(long certificateID) {
-        return jdbcTemplate.query(FETCH_ASSOCIATED_TAGS,new TagResponseMapping(),certificateID);
+    public List<Tag> fetchAssociatedTags(long certificateID) {
+        return jdbcTemplate.query(FETCH_ASSOCIATED_TAGS,new TagMapping(),certificateID);
     }
 
     @Override
-    public TagResponseDto getByName(String name) {
+    public Tag getByName(String name) {
         return null;
     }
 
