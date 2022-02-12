@@ -1,28 +1,48 @@
-package com.epam.esm.service.converter;
+package com.epam.esm.converter;
 
 import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.dto.response.GiftCertificateResponseDto;
 import com.epam.esm.repository.model.GiftCertificate;
-import org.springframework.stereotype.Service;
+import com.epam.esm.service.impl.TagService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class CertificateDtoConverter implements ConverterTemplate<GiftCertificate,GiftCertificateDto,GiftCertificateResponseDto> {
+@Component
+public class CertificateConverter implements ConverterTemplate<GiftCertificate, GiftCertificateDto, GiftCertificateResponseDto> {
 
+
+    private final TagService tagService;
+    private final TagConverter tagConverter;
+    @Autowired
+    public CertificateConverter(TagService tagService, TagConverter tagConverter) {
+
+        this.tagService = tagService;
+        this.tagConverter = tagConverter;
+    }
 
     @Override
     public GiftCertificate convertFromRequestDto(GiftCertificateDto dto) {
-        return GiftCertificate.builder().
+         return GiftCertificate.builder().
                 id(dto.getId()).
                 name(dto.getName()).
                 description(dto.getDescription()).
                 price(dto.getPrice()).
                 duration(dto.getDuration()).
+                associatedTags(tagConverter.convertFromRequestDtos(dto.getAssociatedTags())).
                 build();
+    }
+
+    @Override
+    public List<GiftCertificate> convertFromRequestDtos(List<GiftCertificateDto> dtos) {
+        List<GiftCertificate> objects = new ArrayList<>();
+        for(GiftCertificateDto gc:dtos){
+            objects.add(convertFromRequestDto(gc));
+        }
+        return objects;
     }
 
     @Override
@@ -35,6 +55,7 @@ public class CertificateDtoConverter implements ConverterTemplate<GiftCertificat
                 duration(object.getDuration()).
                 createDate(new Date(object.getCreateDate().getTime())).
                 lastUpdateDate(new Date(object.getLastUpdateDate().getTime())).
+                associatedTags(tagConverter.convertToResponseDtos(object.getAssociatedTags())).//TODO separate it
                 build();
     }
 

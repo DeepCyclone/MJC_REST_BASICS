@@ -1,7 +1,5 @@
 package com.epam.esm.repository.mapping;
 
-import com.epam.esm.dto.response.TagResponseDto;
-import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import org.springframework.jdbc.core.RowMapper;
 

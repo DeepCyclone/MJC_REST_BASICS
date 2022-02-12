@@ -1,10 +1,10 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dto.request.TagDto;
-import com.epam.esm.dto.response.GiftCertificateResponseDto;
-import com.epam.esm.dto.response.TagResponseDto;
-import com.epam.esm.exception.RepositoryException;
+
+import com.epam.esm.exception.ErrorCode;
+import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.TagRepository;
+import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,29 +15,31 @@ import java.util.List;
 @Service
 public class TagService {
 
-    private final TagRepository repository;
+    private final TagRepository tagRepository;
 
     @Autowired
-    public TagService(TagRepository repository) {
-        this.repository = repository;
+    public TagService(TagRepository tagRepository) {
+        this.tagRepository = tagRepository;
     }
 
-    public List<TagResponseDto> getAll(){
-        return repository.readAll();
+    public List<Tag> getAll(){
+        return tagRepository.readAll();
     }
-    public TagResponseDto getByID(long ID){
-        return repository.getByID(ID);
+    public Tag getByID(long ID){
+        return tagRepository.getByID(ID);
     }
-    public TagResponseDto addEntity(TagDto tag) {
-        return repository.create(tag);
+    public Tag addEntity(Tag tag) {
+        return tagRepository.create(tag);
     }
 
     @Transactional
     public void deleteByID(long ID){
-        repository.deleteByID(ID);
+        if(!tagRepository.deleteByID(ID)){
+            throw new ServiceException(ErrorCode.TAG_DELETION_ERROR,"Couldn't delete tag with ID = "+ID);
+        }
     }
 
-    public List<GiftCertificateResponseDto> getAssociatedCertificates(long ID){
+    public List<GiftCertificate> getAssociatedCertificates(long ID){
         return null;
     }
 

@@ -1,8 +1,8 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.converter.TagConverter;
 import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.dto.response.TagResponseDto;
-import com.epam.esm.exception.ObjectNotFoundException;
 import com.epam.esm.service.impl.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,25 +16,25 @@ public class TagController {
 
 
     private final TagService tagService;
+    private final TagConverter tagConverter;
 
     @Autowired
-    public TagController(TagService tagService) {
+    public TagController(TagService tagService, TagConverter tagConverter) {
         this.tagService = tagService;
+        this.tagConverter = tagConverter;
     }
 
-    @GetMapping(value = "/{id:\\d+}")
+    @GetMapping(value = "{id:\\d+}")
     public TagResponseDto getByID(@PathVariable("id") Long id){
-        TagResponseDto tag = tagService.getByID(id);
-        if(tag == null){throw new ObjectNotFoundException("Object with ID:"+id+" wasn't found",id);}//TODO optional or else throw and catch it in controller advice
-        return tag;
+        return tagConverter.convertToResponseDto(tagService.getByID(id));
     }
 
     @GetMapping
     public List<TagResponseDto> getTags(){
-        return tagService.getAll();
+        return tagConverter.convertToResponseDtos(tagService.getAll());
     }
 
-    @DeleteMapping(value = "/{id:\\d+}")
+    @DeleteMapping(value = "{id:\\d+}")
     public void deleteTag(@PathVariable("id") Long id){
         tagService.deleteByID(id);
     }

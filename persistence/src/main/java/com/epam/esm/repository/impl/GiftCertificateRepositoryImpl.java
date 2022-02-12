@@ -1,17 +1,13 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.dto.request.GiftCertificateDto;
-import com.epam.esm.dto.response.GiftCertificateResponseDto;
-import com.epam.esm.dto.response.TagResponseDto;
 import com.epam.esm.exception.ErrorCodeHolder;
 import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repository.GiftCertificateRepository;
-import com.epam.esm.repository.mapping.CertificateResponseDtoMapper;
+import com.epam.esm.repository.field.GiftCertificateField;
 import com.epam.esm.repository.mapping.GiftCertificateMapping;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
@@ -61,12 +57,12 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     @Override
     public GiftCertificate create(GiftCertificate object) throws RepositoryException {
         SimpleJdbcInsertOperations simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcOperations);
-        simpleJdbcInsert.withTableName("gift_certificate").usingGeneratedKeyColumns("gc_id");
+        simpleJdbcInsert.withTableName("gift_certificate").usingGeneratedKeyColumns("gc_id").usingColumns("gc_name","gc_description","gc_price","gc_duration");
         Map<String,Object> params = new HashMap<>();
-        params.put("gc_name",object.getName());
-        params.put("gc_description",object.getDescription());
-        params.put("gc_price",object.getPrice());
-        params.put("gc_duration",object.getDuration());
+        params.put(GiftCertificateField.NAME,object.getName());
+        params.put(GiftCertificateField.DESCRIPTION,object.getDescription());
+        params.put(GiftCertificateField.PRICE,object.getPrice());
+        params.put(GiftCertificateField.DURATION,object.getDuration());
         Number key = simpleJdbcInsert.executeAndReturnKey(params);
         return getByID(key.longValue());
     }
@@ -88,7 +84,12 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public GiftCertificate getByID(long ID){
-        return jdbcOperations.queryForObject(READ_BY_ID, new GiftCertificateMapping(), ID);
+        try {
+            return jdbcOperations.queryForObject(READ_BY_ID, new GiftCertificateMapping(), ID);
+        }
+        catch (Exception e){
+            throw new RepositoryException(ErrorCodeHolder.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate["+ID+"]");
+        }
     }
 
     @Override

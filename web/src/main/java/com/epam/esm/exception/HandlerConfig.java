@@ -2,6 +2,7 @@ package com.epam.esm.exception;
 
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -11,17 +12,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class HandlerConfig extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RepositoryException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public ErrorDescriptor objectNotFound(RepositoryException e){
-        return new ErrorDescriptor(e.getErrorCode(),e.getErrorMsg());
+    public ResponseEntity<ErrorDescriptor> objectNotFound(RepositoryException e){
+        return new ResponseEntity<>(new ErrorDescriptor(e.getErrorCode(),e.getErrorMsg()),e.obtainHttpStatusOfError());
     }
 
     @ExceptionHandler(ServiceException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public ErrorDescriptor updateError(ServiceException e){
-        return new ErrorDescriptor(e.getErrorCode(),e.getErrorMsg());
+    public ResponseEntity<ErrorDescriptor> objectNotFound(ServiceException e){
+        return new ResponseEntity<>(new ErrorDescriptor(e.getErrorCode(),e.getErrorMsg()),e.obtainHttpStatusOfError());
     }
 
 
