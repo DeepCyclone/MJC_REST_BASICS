@@ -19,7 +19,7 @@ public class DispatcherServlet extends AbstractAnnotationConfigDispatcherServlet
 
     @Override
     protected String[] getServletMappings() {
-        return new String[]{"/api/*"};
+        return new String[]{"/v1/*"};
     }
 
 }

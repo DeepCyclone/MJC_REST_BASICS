@@ -55,7 +55,7 @@ public class CertificateConverter implements ConverterTemplate<GiftCertificate, 
                 duration(object.getDuration()).
                 createDate(new Date(object.getCreateDate().getTime())).
                 lastUpdateDate(new Date(object.getLastUpdateDate().getTime())).
-                associatedTags(tagConverter.convertToResponseDtos(object.getAssociatedTags())).//TODO separate it
+                associatedTags(tagConverter.convertToResponseDtos(object.getAssociatedTags())).
                 build();
     }
 
