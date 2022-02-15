@@ -5,6 +5,8 @@ import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
+import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +17,13 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class GiftCertificateService {
+public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateRepository certificateRepository;
     private final TagRepository tagRepository;
 
     @Autowired
-    public GiftCertificateService(GiftCertificateRepository certificateRepository, TagRepository tagRepository) {
+    public GiftCertificateServiceImpl(GiftCertificateRepository certificateRepository, TagRepository tagRepository) {
         this.certificateRepository = certificateRepository;
         this.tagRepository = tagRepository;
     }
@@ -64,6 +66,7 @@ public class GiftCertificateService {
         Optional.ofNullable(certificatePatch.getDescription()).ifPresent(originalCertificate::setDescription);
         Optional.ofNullable(certificatePatch.getPrice()).ifPresent(originalCertificate::setPrice);
         originalCertificate.setDuration(certificatePatch.getDuration());
+        detachAssociatedTags(certificatePatch.getId());
         if (certificatePatch.getAssociatedTags() != null) {
             List<Tag> tags = saveAssociatedTags(certificatePatch.getAssociatedTags());
             if(!tags.isEmpty()) {
@@ -91,7 +94,4 @@ public class GiftCertificateService {
         return certificateRepository.handleParametrizedRequest(params);
     }
 
-    public GiftCertificate getByName(String name) {
-        return null;
-    }
 }

@@ -1,13 +1,11 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.dto.response.GiftCertificateResponseDto;
-import com.epam.esm.dto.response.TagResponseDto;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.converter.CertificateConverter;
-import com.epam.esm.service.impl.GiftCertificateService;
+import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,19 +31,17 @@ import java.util.Map;
 @RequestMapping(value = "certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
 public class GiftCertificateController {
 
-    private final GiftCertificateService service;
+    private final GiftCertificateServiceImpl service;
     private final CertificateConverter converter;
 
     @Autowired
-    public GiftCertificateController(GiftCertificateService service, CertificateConverter converter) {
+    public GiftCertificateController(GiftCertificateServiceImpl service, CertificateConverter converter) {
         this.service = service;
         this.converter = converter;
     }
 
-
     @GetMapping
-    public List<GiftCertificateResponseDto> getAllByRequestParams(@RequestParam Map<String,String> params)
-    {
+    public List<GiftCertificateResponseDto> getAllByRequestParams(@RequestParam Map<String,String> params) {
         return converter.convertToResponseDtos(service.handleParametrizedGetRequest(params));
     }
 
@@ -57,11 +53,9 @@ public class GiftCertificateController {
     }
 
     @DeleteMapping(value = "/{id:\\d+}")
-    public ResponseEntity<Void> deleteCertificate(@PathVariable long id){
-        HttpStatus status = service.deleteByID(id) ?
-                HttpStatus.NO_CONTENT:
-                HttpStatus.NOT_FOUND;
-        return new ResponseEntity<>(status);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCertificate(@PathVariable long id){
+        service.deleteByID(id);
     }
 
     @PutMapping

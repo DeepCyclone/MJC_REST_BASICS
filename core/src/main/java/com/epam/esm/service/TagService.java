@@ -1,4 +1,4 @@
 package com.epam.esm.service;
 
-public interface Tag {
+public interface TagService {
 }

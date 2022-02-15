@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = {"com.epam.esm"})
-public class WebConfig implements WebMvcConfigurer,WebApplicationInitializer {
+public class WebConfig implements WebMvcConfigurer {
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         configurer.defaultContentType(MediaType.APPLICATION_JSON);
@@ -45,12 +45,4 @@ public class WebConfig implements WebMvcConfigurer,WebApplicationInitializer {
     }
 
 
-
-    //SET current configuration
-    @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
-        servletContext.setInitParameter(
-                "spring.profiles.active", "prod");
-
-    }
 }

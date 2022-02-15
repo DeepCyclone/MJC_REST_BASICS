@@ -1,17 +1,14 @@
 package com.epam.esm.config;
 
-import com.epam.esm.config.RootConfig;
-import com.epam.esm.config.WebConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
 
 public class DispatcherServlet extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[]{RootConfig.class};
+        return null;
     }
 
     @Override
@@ -24,4 +21,10 @@ public class DispatcherServlet extends AbstractAnnotationConfigDispatcherServlet
         return new String[]{"/v1/*"};
     }
 
+    @Override
+    public void onStartup(ServletContext servletContext) throws ServletException {
+        servletContext.setInitParameter(
+                "spring.profiles.active", "prod");
+
+    }
 }

@@ -99,13 +99,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public boolean detachAssociatedTags(long certificateID) {
-        return false;
+        return jdbcOperations.update(DETACH_ASSOCIATED_TAGS,certificateID) >= MIN_AFFECTED_ROWS;
     }
-
-//    @Override
-//    public boolean detachAssociatedTags(long certificateID) {
-//        return jdbcOperations.update(DETACH_ASSOCIATED_TAGS,certificateID) == MIN_AFFECTED_ROWS;
-//    }
 
     @Override
     public List<GiftCertificate> handleParametrizedRequest(Map<String,String> params){

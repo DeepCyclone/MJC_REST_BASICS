@@ -3,7 +3,7 @@ package com.epam.esm.converter;
 import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.dto.response.GiftCertificateResponseDto;
 import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.service.impl.TagService;
+import com.epam.esm.service.impl.TagServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +15,12 @@ import java.util.List;
 public class CertificateConverter implements ConverterTemplate<GiftCertificate, GiftCertificateDto, GiftCertificateResponseDto> {
 
 
-    private final TagService tagService;
+    private final TagServiceImpl tagServiceImpl;
     private final TagConverter tagConverter;
     @Autowired
-    public CertificateConverter(TagService tagService, TagConverter tagConverter) {
+    public CertificateConverter(TagServiceImpl tagServiceImpl, TagConverter tagConverter) {
 
-        this.tagService = tagService;
+        this.tagServiceImpl = tagServiceImpl;
         this.tagConverter = tagConverter;
     }
 

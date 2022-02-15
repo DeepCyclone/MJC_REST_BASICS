@@ -6,6 +6,7 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
+import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class TagService {
+public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
 
     @Autowired
-    public TagService(TagRepository tagRepository) {
+    public TagServiceImpl(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
     }
 
@@ -41,8 +42,5 @@ public class TagService {
         return flushingResult;
     }
 
-    public List<GiftCertificate> getAssociatedCertificates(long ID){
-        return null;
-    }
 
 }
