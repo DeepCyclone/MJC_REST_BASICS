@@ -1,19 +1,11 @@
 package com.epam.esm.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public class ErrorDescriptor {
     private final String errorCode;
     private final String errorMsg;
-
-    public ErrorDescriptor(String errorCode, String errorMsg) {
-        this.errorCode = errorCode;
-        this.errorMsg = errorMsg;
-    }
-
-    public String getErrorCode() {
-        return errorCode;
-    }
-
-    public String getErrorMsg() {
-        return errorMsg;
-    }
 }

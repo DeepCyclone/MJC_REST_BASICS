@@ -58,24 +58,26 @@ public class GiftCertificateService {
     }
 
     @Transactional
-    public GiftCertificate update(GiftCertificate certificatePatch, long certificateID) {
-        GiftCertificate originalCertificate = getByID(certificateID);
+    public GiftCertificate update(GiftCertificate certificatePatch) {
+        GiftCertificate originalCertificate = getByID(certificatePatch.getId());
         Optional.ofNullable(certificatePatch.getName()).ifPresent(originalCertificate::setName);
         Optional.ofNullable(certificatePatch.getDescription()).ifPresent(originalCertificate::setDescription);
         Optional.ofNullable(certificatePatch.getPrice()).ifPresent(originalCertificate::setPrice);
         originalCertificate.setDuration(certificatePatch.getDuration());
         if (certificatePatch.getAssociatedTags() != null) {
             List<Tag> tags = saveAssociatedTags(certificatePatch.getAssociatedTags());
-            certificateRepository.linkAssociatedTags(certificateID, tags);
+            if(!tags.isEmpty()) {
+                certificateRepository.linkAssociatedTags(certificatePatch.getId(), tags);
+            }
         }
-        certificateRepository.update(originalCertificate,certificateID);
-        return getByID(certificateID);
+        certificateRepository.update(originalCertificate,certificatePatch.getId());
+        return getByID(certificatePatch.getId());
     }
 
     private List<Tag> saveAssociatedTags(List<Tag> tags) {
         List<Tag> tagsIdentifiable = new ArrayList<>();
         for(Tag tag:tags) {
-            tagsIdentifiable.add(tagRepository.create(tag));
+            Optional.ofNullable(tagRepository.create(tag)).ifPresent(tagsIdentifiable::add);
         }
         return tagsIdentifiable;
     }

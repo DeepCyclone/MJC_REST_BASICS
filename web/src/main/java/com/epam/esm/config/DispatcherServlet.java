@@ -4,6 +4,8 @@ import com.epam.esm.config.RootConfig;
 import com.epam.esm.config.WebConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 public class DispatcherServlet extends AbstractAnnotationConfigDispatcherServletInitializer {

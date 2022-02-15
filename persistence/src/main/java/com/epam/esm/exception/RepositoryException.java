@@ -11,13 +11,4 @@ public class RepositoryException extends RuntimeException{
     private final String errorCode;
     private final String errorMsg;
 
-    public HttpStatus obtainHttpStatusOfError(){
-        if(errorCode.startsWith("404")){
-            return HttpStatus.NOT_FOUND;
-        }
-        if(errorCode.startsWith("409")){
-            return HttpStatus.CONFLICT;
-        }
-        return HttpStatus.OK;
-    }
 }

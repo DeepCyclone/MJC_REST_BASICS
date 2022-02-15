@@ -20,11 +20,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -39,51 +42,40 @@ public class GiftCertificateController {
         this.converter = converter;
     }
 
+
     @GetMapping
-    public List<GiftCertificateResponseDto> getAll() {
-
-        List<GiftCertificate> certificates = service.getAll();
-        List<GiftCertificateResponseDto> dtos = converter.convertToResponseDtos(certificates);
-        return dtos;
+    public List<GiftCertificateResponseDto> getAllByRequestParams(@RequestParam Map<String,String> params)
+    {
+        return converter.convertToResponseDtos(service.handleParametrizedGetRequest(params));
     }
-
-//    @GetMapping
-//    public List<GiftCertificateResponseDto> getAllByRequestParams(@RequestParam Map<String,String> params)
-//    {
-//        return converter.convertToResponseDtos(service.handleParametrizedGetRequest(params));
-//    }
 
     @GetMapping(value = "/{id:\\d+}")
     public GiftCertificateResponseDto getByID(@PathVariable long id) {
 
-        GiftCertificate giftCertificate = service.getByID(id);//NOT FOUND EXCEPTION
-        GiftCertificateResponseDto dto = converter.convertToResponseDto(giftCertificate);
-        return dto;
+        GiftCertificate giftCertificate = service.getByID(id);
+        return converter.convertToResponseDto(giftCertificate);
     }
-
-    @GetMapping(value = "/{id:\\d+}/tags")
-    public List<TagResponseDto> getAssociatedTags(@PathVariable long id) {
-        return null;
-    }
-
 
     @DeleteMapping(value = "/{id:\\d+}")
     public ResponseEntity<Void> deleteCertificate(@PathVariable long id){
-        HttpStatus status = service.deleteByID(id)? HttpStatus.NO_CONTENT:HttpStatus.NOT_FOUND;
+        HttpStatus status = service.deleteByID(id) ?
+                HttpStatus.NO_CONTENT:
+                HttpStatus.NOT_FOUND;
         return new ResponseEntity<>(status);
     }
 
-    @PutMapping(value = "/{id:\\d+}")
-    public ResponseEntity<?> updateCertificate(@PathVariable long id, @RequestBody @Validated({PatchDTO.class}) GiftCertificateDto certificateDtoPatch){
+    @PutMapping
+    public ResponseEntity<?> updateCertificate(@RequestBody @Validated({PatchDTO.class}) GiftCertificateDto certificateDtoPatch){
         GiftCertificate certificate = converter.convertFromRequestDto(certificateDtoPatch);
-        GiftCertificateResponseDto a = converter.convertToResponseDto(service.update(certificate,id));//TODO CONFLICT
+        GiftCertificateResponseDto a = converter.convertToResponseDto(service.update(certificate));
         return new ResponseEntity<>(a,HttpStatus.CREATED);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public GiftCertificateResponseDto createCertificate(@RequestBody @Validated({CreateDTO.class}) GiftCertificateDto certificateDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public GiftCertificateResponseDto createCertificate(@RequestBody @Valid GiftCertificateDto certificateDto) {
         GiftCertificate certificate = converter.convertFromRequestDto(certificateDto);
-        return converter.convertToResponseDto(service.addEntity(certificate));//TODO 201-CREATED,409-CONFLICT
+        return converter.convertToResponseDto(service.addEntity(certificate));
     }
 
 }

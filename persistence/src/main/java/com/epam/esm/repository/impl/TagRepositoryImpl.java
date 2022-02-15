@@ -9,8 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +26,7 @@ public class TagRepositoryImpl implements TagRepository {
     public static final String READ_ALL = "SELECT * FROM tag";
     public static final String DELETE_BY_ID = "DELETE FROM tag WHERE t_id = ?";
     public static final String FETCH_ASSOCIATED_TAGS = "SELECT t_id,t_name FROM tag WHERE t_id IN (SELECT tmgc_t_id FROM tag_m2m_gift_certificate WHERE tmgc_gc_id = ?)";
+    public static final String INSERT_INTO = "INSERT IGNORE INTO tag VALUES(?,?)";
     public static final int MIN_AFFECTED_ROWS = 1;
 
     private final JdbcTemplate jdbcTemplate;
@@ -33,12 +38,18 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Tag create(Tag object) {
-        SimpleJdbcInsertOperations simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcTemplate);
-        simpleJdbcInsert.withTableName("tag").usingGeneratedKeyColumns("t_id");
-        Map<String,Object> paramsMap = new HashMap<>();
-        paramsMap.put("t_name",object.getName());
-        Number key = simpleJdbcInsert.executeAndReturnKey(paramsMap);
-        return getByID(key.longValue());
+        KeyHolder holder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement stmt = con.prepareStatement(INSERT_INTO, Statement.RETURN_GENERATED_KEYS);
+            stmt.setLong(1,object.getId());
+            stmt.setString(2,object.getName());
+            return stmt;},holder);
+        if(holder.getKey()!=null) {
+            return getByID(holder.getKey().longValue());
+        }
+        else {
+            return null;
+        }
     }
 
     @Override

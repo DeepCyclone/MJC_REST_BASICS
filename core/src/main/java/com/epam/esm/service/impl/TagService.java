@@ -33,10 +33,12 @@ public class TagService {
     }
 
     @Transactional
-    public void deleteByID(long ID){
-        if(!tagRepository.deleteByID(ID)){
+    public boolean deleteByID(long ID){
+        boolean flushingResult = tagRepository.deleteByID(ID);
+        if(!flushingResult){
             throw new ServiceException(ErrorCode.TAG_DELETION_ERROR,"Couldn't delete tag with ID = "+ID);
         }
+        return flushingResult;
     }
 
     public List<GiftCertificate> getAssociatedCertificates(long ID){

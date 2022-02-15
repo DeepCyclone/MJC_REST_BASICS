@@ -1,13 +1,13 @@
+
 create table gift_certificate
 (
-    gc_id               bigint unsigned auto_increment
-        primary key,
+    gc_id               bigint auto_increment primary key,
     gc_name             varchar(50)                         not null,
     gc_description      varchar(200)                        not null,
     gc_price            decimal(20, 10)                     not null,
     gc_duration         int                                 not null,
     gc_create_date      timestamp default CURRENT_TIMESTAMP not null,
-    gc_last_update_date timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP
+    gc_last_update_date timestamp default CURRENT_TIMESTAMP not null
 );
 
 create table tag
@@ -31,6 +31,15 @@ create table tag_m2m_gift_certificate
 );
 
 INSERT INTO gift_certificate (gc_id, gc_name, gc_description, gc_price, gc_duration, gc_create_date, gc_last_update_date)
-VALUES ((1,'Cert1','Cert1A',100.5,30,'2022-01-10 10:10:10','2022-01-10 10:10:12'),
-        (2,'Cert2','Cert2A',100.5,30,'2022-01-10 10:10:12','2022-01-10 10:10:14'),
-        (3,'Cert3','Cert3A',100.5,30,'2022-01-10 10:10:14','2022-01-10 10:10:16'))
+VALUES (1,'Cert1','Cert1A',100.5,30,'2022-01-10 10:10:10','2022-01-10 10:10:12');
+
+INSERT INTO gift_certificate (gc_id, gc_name, gc_description, gc_price, gc_duration, gc_create_date, gc_last_update_date)
+VALUES (2,'Cert2','Cert2A',100.5,30,'2022-01-10 10:10:12','2022-01-10 10:10:14');
+
+INSERT INTO gift_certificate (gc_id, gc_name, gc_description, gc_price, gc_duration, gc_create_date, gc_last_update_date)
+VALUES (3,'Cert3','Cert3A',100.5,30,'2022-01-10 10:10:14','2022-01-10 10:10:16');
+
+
+
+
+

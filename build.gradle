@@ -33,7 +33,6 @@ subprojects {
         testImplementation 'org.hamcrest:hamcrest:2.2'
         compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
         implementation group: 'com.zaxxer', name: 'HikariCP', version: '4.0.3'
-        testImplementation 'com.h2database:h2:2.1.210'
         compileOnly 'org.projectlombok:lombok:1.18.22'
         annotationProcessor 'org.projectlombok:lombok:1.18.22'
         testCompileOnly 'org.projectlombok:lombok:1.18.22'
