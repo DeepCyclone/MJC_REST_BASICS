@@ -22,7 +22,7 @@ public class ComplexParamMapProcessor {
     public static final String COMMA = ",";
 
 
-    public static String buildNamedQuery(Map<String,String> params){
+    public static String buildQuery(Map<String,String> params){
         StringBuilder query = new StringBuilder(JOIN_PARAMS);
         Optional.ofNullable(params.get(tagName)).ifPresent(val -> query.append(TAG_NAME_FILTER).append(COLON).append(tagName));
         query.append(JOIN_ON_CONDITION);

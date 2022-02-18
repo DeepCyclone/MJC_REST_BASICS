@@ -19,10 +19,4 @@ public class DispatcherServlet extends AbstractAnnotationConfigDispatcherServlet
         return new String[]{"/v1/*"};
     }
 
-//    @Override
-//    public void onStartup(ServletContext servletContext) {
-//        servletContext.setInitParameter(
-//                "spring.profiles.active", "prod");
-//
-//    }
 }

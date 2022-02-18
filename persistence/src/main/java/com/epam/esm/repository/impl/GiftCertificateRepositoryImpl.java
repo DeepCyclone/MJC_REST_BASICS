@@ -98,7 +98,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public List<GiftCertificate> handleParametrizedRequest(Map<String,String> params){
-        String query = ComplexParamMapProcessor.buildNamedQuery(params);
+        String query = ComplexParamMapProcessor.buildQuery(params);
         prepareParamsToSearchStatement(params);
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(this.jdbcOperations);
         return template.query(query, params,new ComplexCertificateMapping());
