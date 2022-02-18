@@ -1,5 +1,8 @@
 package com.epam.esm.repository.field;
 
+/*
+* Class holder of giftcertificate datasource internal fields names
+* */
 public class GiftCertificateField {
     public static final String DB_PREFIX = "gc_";
     public static final String ID = DB_PREFIX + "id";

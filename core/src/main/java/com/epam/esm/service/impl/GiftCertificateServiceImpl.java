@@ -19,6 +19,11 @@ import java.util.Optional;
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
+    private static final String nameSortOrder = "nameSortOrder";
+    private static final String dateSortOrder = "dateSortOrder";
+    private static final String ASCENDING_SORT = "ASC";
+    private static final String DESCENDING_SORT = "DESC";
+
     private final GiftCertificateRepository certificateRepository;
     private final TagRepository tagRepository;
 
@@ -91,7 +96,21 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
 
     public List<GiftCertificate> handleParametrizedGetRequest(Map<String,String> params){
+        deleteInvalidValuedParams(params);
         return certificateRepository.handleParametrizedRequest(params);
+    }
+
+    private void deleteInvalidValuedParams(Map<String,String> params){
+        if(params.containsKey(nameSortOrder) && !isAllowedOrderDirection(params.get(nameSortOrder))){
+            params.remove(nameSortOrder);
+        }
+        if(params.containsKey(dateSortOrder) && !isAllowedOrderDirection(params.get(dateSortOrder))){
+            params.remove(dateSortOrder);
+        }
+    }
+
+    private static boolean isAllowedOrderDirection(String order){
+        return order.equalsIgnoreCase(ASCENDING_SORT) || order.equalsIgnoreCase(DESCENDING_SORT);
     }
 
 }

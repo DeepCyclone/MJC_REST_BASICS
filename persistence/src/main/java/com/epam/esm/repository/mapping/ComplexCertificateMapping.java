@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+
+
 public class ComplexCertificateMapping implements ResultSetExtractor<List<GiftCertificate>> {
     @Override
     public List<GiftCertificate> extractData(ResultSet rs) throws SQLException, DataAccessException {
@@ -36,9 +38,9 @@ public class ComplexCertificateMapping implements ResultSetExtractor<List<GiftCe
                 certificates.add(certificate);
             }
             associatedTags.add(Tag.builder().
-                    id(rs.getLong(TagField.ID)).
-                    name(rs.getString(TagField.NAME)).
-                    build());
+                               id(rs.getLong(TagField.ID)).
+                               name(rs.getString(TagField.NAME)).
+                               build());
         }
         return certificates;
     }

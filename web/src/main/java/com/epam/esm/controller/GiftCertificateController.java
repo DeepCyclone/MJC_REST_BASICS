@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,7 @@ public class GiftCertificateController {
 
     @GetMapping
     public List<GiftCertificateResponseDto> getAllByRequestParams(@RequestParam Map<String,String> params) {
+        System.out.println(params);
         return converter.convertToResponseDtos(service.handleParametrizedGetRequest(params));
     }
 
