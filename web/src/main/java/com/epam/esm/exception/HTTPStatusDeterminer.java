@@ -8,6 +8,9 @@ public class HTTPStatusDeterminer {
         if(errorCode.startsWith("404")){
             status = HttpStatus.NOT_FOUND;
         }
+        if(errorCode.startsWith("404")){
+            status = HttpStatus.NOT_FOUND;
+        }
         else if(errorCode.startsWith("409")){
             status = HttpStatus.CONFLICT;
         }

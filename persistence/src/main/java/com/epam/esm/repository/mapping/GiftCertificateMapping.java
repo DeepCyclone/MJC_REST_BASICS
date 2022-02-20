@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.GregorianCalendar;
 
 public class GiftCertificateMapping implements RowMapper<GiftCertificate> {
     @Override
@@ -15,8 +16,8 @@ public class GiftCertificateMapping implements RowMapper<GiftCertificate> {
                 description(rs.getString("gc_description")).
                 price(rs.getBigDecimal("gc_price")).
                 duration(rs.getInt("gc_duration")).
-                createDate(rs.getTimestamp("gc_create_date")).
-                lastUpdateDate(rs.getTimestamp("gc_last_update_date")).
+                createDate(rs.getTimestamp("gc_create_date",new GregorianCalendar())).
+                lastUpdateDate(rs.getTimestamp("gc_last_update_date",new GregorianCalendar())).
                 build();
     }
 }

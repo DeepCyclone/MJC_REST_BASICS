@@ -1,13 +1,13 @@
-
 create table gift_certificate
 (
-    gc_id               bigint auto_increment primary key,
+    gc_id               bigint unsigned auto_increment
+        primary key,
     gc_name             varchar(50)                         not null,
     gc_description      varchar(200)                        not null,
-    gc_price            decimal(20, 10)                     not null,
+    gc_price            decimal(15, 5)                     not null,
     gc_duration         int                                 not null,
-    gc_create_date      timestamp default CURRENT_TIMESTAMP not null,
-    gc_last_update_date timestamp default CURRENT_TIMESTAMP not null
+    gc_create_date      timestamp(3) default CURRENT_TIMESTAMP(3) not null,
+    gc_last_update_date timestamp(3) default CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3) not null
 );
 
 create table tag

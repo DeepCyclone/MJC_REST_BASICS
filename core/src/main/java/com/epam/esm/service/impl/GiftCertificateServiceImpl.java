@@ -1,12 +1,14 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.exception.ErrorCode;
+import com.epam.esm.exception.ErrorCodeHolder;
 import com.epam.esm.exception.RepositoryException;
+import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.GiftCertificateService;
-import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static com.epam.esm.exception.ErrorCode.CERTIFICATE_BAD_REQUEST_PARAMS;
 
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
@@ -33,13 +37,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         this.tagRepository = tagRepository;
     }
 
-    public List<GiftCertificate> getAll(){
-        List<GiftCertificate> certificates = certificateRepository.readAll();
-        for(GiftCertificate certificate:certificates){
-            certificate.setAssociatedTags(tagRepository.fetchAssociatedTags(certificate.getId()));
-        }
-        return certificates;
-    }
     public GiftCertificate getByID(long ID) {
         GiftCertificate certificate = certificateRepository.getByID(ID);
         certificate.setAssociatedTags(tagRepository.fetchAssociatedTags(ID));
@@ -57,11 +54,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
         certificateRepository.linkAssociatedTags(baseCert.getId(),savedTags);
         return baseCert;
+//        return getByID(certificateDto);
     }
 
     @Transactional
-    public boolean deleteByID(long ID){
-        return certificateRepository.deleteByID(ID);
+    public void deleteByID(long ID){
+        boolean result = certificateRepository.deleteByID(ID);
+        if(!result){
+            throw new ServiceException(ErrorCode.CERTIFICATE_DELETION_ERROR,"Cannot delete cert with ID = "+ID);
+        }
     }
 
     @Transactional
@@ -82,7 +83,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return getByID(certificatePatch.getId());
     }
 
-    private List<Tag> saveAssociatedTags(List<Tag> tags) {
+    public List<Tag> saveAssociatedTags(List<Tag> tags) {
         List<Tag> tagsIdentifiable = new ArrayList<>();
         for(Tag tag:tags) {
             Optional.ofNullable(tagRepository.create(tag)).ifPresent(tagsIdentifiable::add);
@@ -90,27 +91,29 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return tagsIdentifiable;
     }
 
-    private void detachAssociatedTags(long certificateID){
-        certificateRepository.detachAssociatedTags(certificateID);
-    }
-
 
     public List<GiftCertificate> handleParametrizedGetRequest(Map<String,String> params){
-        deleteInvalidValuedParams(params);
-        return certificateRepository.handleParametrizedRequest(params);
+        checkInvalidValuedParams(params);
+        List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(params);
+        for(GiftCertificate certificate:certificates){
+            certificate.setAssociatedTags(tagRepository.fetchAssociatedTags(certificate.getId()));
+        }
+        return certificates;
     }
 
-    private void deleteInvalidValuedParams(Map<String,String> params){
-        if(params.containsKey(nameSortOrder) && !isAllowedOrderDirection(params.get(nameSortOrder))){
-            params.remove(nameSortOrder);
-        }
-        if(params.containsKey(dateSortOrder) && !isAllowedOrderDirection(params.get(dateSortOrder))){
-            params.remove(dateSortOrder);
+    private void checkInvalidValuedParams(Map<String,String> params){
+        if((params.containsKey(nameSortOrder) && !isAllowedOrderDirection(params.get(nameSortOrder))) ||
+                (params.containsKey(dateSortOrder) && !isAllowedOrderDirection(params.get(dateSortOrder)))){
+            throw new ServiceException(CERTIFICATE_BAD_REQUEST_PARAMS,"allowed values for sorting params are ASC and DESC");
         }
     }
 
     private static boolean isAllowedOrderDirection(String order){
         return order.equalsIgnoreCase(ASCENDING_SORT) || order.equalsIgnoreCase(DESCENDING_SORT);
+    }
+
+    private void detachAssociatedTags(long certificateID){
+        certificateRepository.detachAssociatedTags(certificateID);
     }
 
 }

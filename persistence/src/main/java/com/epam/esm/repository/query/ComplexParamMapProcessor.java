@@ -1,15 +1,21 @@
 package com.epam.esm.repository.query;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import static com.epam.esm.repository.query.CertificateQueryHolder.AND;
 import static com.epam.esm.repository.query.CertificateQueryHolder.CERTIFICATE_NAME_SEARCH;
-import static com.epam.esm.repository.query.CertificateQueryHolder.CERTIFICATE_UPDATE_DATE_SEARCH;
-import static com.epam.esm.repository.query.CertificateQueryHolder.JOIN_ON_CONDITION;
+import static com.epam.esm.repository.query.CertificateQueryHolder.CERTIFICATE_DESCRIPTION_SEARCH;
 import static com.epam.esm.repository.query.CertificateQueryHolder.JOIN_PARAMS;
 import static com.epam.esm.repository.query.CertificateQueryHolder.ORDER_BY;
+import static com.epam.esm.repository.query.CertificateQueryHolder.READ_ALL;
 import static com.epam.esm.repository.query.CertificateQueryHolder.TAG_NAME_FILTER;
+import static com.epam.esm.repository.query.CertificateQueryHolder.WHERE;
 
 public class ComplexParamMapProcessor {
     public static final String tagName = "tagName";
@@ -23,13 +29,33 @@ public class ComplexParamMapProcessor {
 
 
     public static String buildQuery(Map<String,String> params){
-        StringBuilder query = new StringBuilder(JOIN_PARAMS);
-        Optional.ofNullable(params.get(tagName)).ifPresent(val -> query.append(TAG_NAME_FILTER).append(COLON).append(tagName));
-        query.append(JOIN_ON_CONDITION);
-        Optional.ofNullable(params.get(namePart)).ifPresent(val -> query.append(CERTIFICATE_NAME_SEARCH).append(COLON).append(namePart));
-        Optional.ofNullable(params.get(descriptionPart)).ifPresent(val -> query.append(CERTIFICATE_UPDATE_DATE_SEARCH).append(COLON).append(descriptionPart));
-        query.append(appendQueryWithSorting(params));
-        return query.toString();
+        if(!params.isEmpty()) {
+            StringBuilder query = new StringBuilder(JOIN_PARAMS);
+            query.append(appendQueryWithSearching(params));
+            query.append(appendQueryWithSorting(params));
+            return query.toString();
+        }
+        return READ_ALL;
+    }
+
+    private static String appendQueryWithSearching(Map<String,String> params){
+        if(params.containsKey(tagName) || params.containsKey(namePart) || params.containsKey(descriptionPart)) {
+            StringBuilder searchingQuery = new StringBuilder(WHERE);
+            Optional<String> tagNameValue = Optional.ofNullable(params.get(tagName));
+            Optional<String> namePartValue = Optional.ofNullable(params.get(namePart));
+            Optional<String> descriptionPartValue = Optional.ofNullable(params.get(descriptionPart));
+            tagNameValue.ifPresent(val -> searchingQuery.append(TAG_NAME_FILTER).append(COLON).append(tagName));
+            namePartValue.ifPresent(val-> {
+                if(tagNameValue.isPresent()){searchingQuery.append(AND);}
+                searchingQuery.append(CERTIFICATE_NAME_SEARCH).append(COLON).append(namePart);
+            });
+            descriptionPartValue.ifPresent(val -> {
+                if(tagNameValue.isPresent() || namePartValue.isPresent()){searchingQuery.append(AND);}
+                searchingQuery.append(CERTIFICATE_DESCRIPTION_SEARCH).append(COLON).append(descriptionPart);
+            });
+            return searchingQuery.toString();
+        }
+        return "";
     }
 
     private static String appendQueryWithSorting(Map<String,String> params){

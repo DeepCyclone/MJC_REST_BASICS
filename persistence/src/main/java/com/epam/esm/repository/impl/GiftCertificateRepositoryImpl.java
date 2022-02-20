@@ -12,6 +12,7 @@ import static com.epam.esm.repository.query.CertificateQueryHolder.*;
 
 import com.epam.esm.repository.query.ComplexParamMapProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -69,7 +70,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try {
             return jdbcOperations.queryForObject(READ_BY_ID, new GiftCertificateMapping(), ID);
         }
-        catch (Exception e){
+        catch (DataAccessException e){
             throw new RepositoryException(ErrorCodeHolder.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate["+ID+"]");
         }
     }
@@ -101,7 +102,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         String query = ComplexParamMapProcessor.buildQuery(params);
         prepareParamsToSearchStatement(params);
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(this.jdbcOperations);
-        return template.query(query, params,new ComplexCertificateMapping());
+        return template.query(query, params,new GiftCertificateMapping());
     }
 
     private void prepareParamsToSearchStatement(Map<String,String> params){

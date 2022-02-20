@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,8 +33,8 @@ public class ComplexCertificateMapping implements ResultSetExtractor<List<GiftCe
                                               description(rs.getString(GiftCertificateField.DESCRIPTION)).
                                               duration(rs.getInt(GiftCertificateField.DURATION)).
                                               price(rs.getBigDecimal(GiftCertificateField.PRICE)).
-                                              createDate(rs.getTimestamp(GiftCertificateField.CREATE_DATE)).
-                                              lastUpdateDate(rs.getTimestamp(GiftCertificateField.LAST_UPDATE_DATE)).
+                                              createDate(rs.getTimestamp(GiftCertificateField.CREATE_DATE,new GregorianCalendar())).
+                                              lastUpdateDate(rs.getTimestamp(GiftCertificateField.LAST_UPDATE_DATE,new GregorianCalendar())).
                                               associatedTags(associatedTags).
                                               build();
                 certificates.add(certificate);
