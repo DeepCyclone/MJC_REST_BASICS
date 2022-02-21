@@ -26,14 +26,16 @@ public class CertificateConverter implements ConverterTemplate<GiftCertificate, 
 
     @Override
     public GiftCertificate convertFromRequestDto(GiftCertificateDto dto) {
-         return GiftCertificate.builder().
-                id(dto.getId()).
-                name(dto.getName()).
-                description(dto.getDescription()).
-                price(dto.getPrice()).
-                duration(dto.getDuration()).
-                associatedTags(tagConverter.convertFromRequestDtos(dto.getAssociatedTags())).
-                build();
+        GiftCertificate certificate = new GiftCertificate();
+        if (dto.getId() != null) {
+            certificate.setId(dto.getId());
+        }
+        certificate.setName(dto.getName());
+        certificate.setDescription(dto.getDescription());
+        certificate.setPrice(dto.getPrice());
+        certificate.setDuration(dto.getDuration());
+        certificate.setAssociatedTags(tagConverter.convertFromRequestDtos(dto.getAssociatedTags()));
+        return certificate;
     }
 
     @Override

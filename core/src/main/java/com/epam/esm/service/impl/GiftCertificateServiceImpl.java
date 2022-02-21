@@ -46,15 +46,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificate addEntity(GiftCertificate certificateDto) throws RepositoryException {
         GiftCertificate baseCert = certificateRepository.create(certificateDto);
         List<Tag> savedTags = saveAssociatedTags(certificateDto.getAssociatedTags());
-        if(baseCert.getAssociatedTags()!=null){
-            baseCert.getAssociatedTags().addAll(savedTags);
-        }
-        else{
-            baseCert.setAssociatedTags(savedTags);
-        }
         certificateRepository.linkAssociatedTags(baseCert.getId(),savedTags);
-        return baseCert;
-//        return getByID(certificateDto);
+        return getByID(baseCert.getId());
     }
 
     @Transactional
@@ -85,8 +78,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     public List<Tag> saveAssociatedTags(List<Tag> tags) {
         List<Tag> tagsIdentifiable = new ArrayList<>();
-        for(Tag tag:tags) {
-            Optional.ofNullable(tagRepository.create(tag)).ifPresent(tagsIdentifiable::add);
+        if(tags!=null) {
+            for (Tag tag : tags) {
+                tagsIdentifiable.add(tagRepository.create(tag));
+            }
         }
         return tagsIdentifiable;
     }

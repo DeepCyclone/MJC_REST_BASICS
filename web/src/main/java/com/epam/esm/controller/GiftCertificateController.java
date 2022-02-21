@@ -43,7 +43,6 @@ public class GiftCertificateController {
 
     @GetMapping
     public List<GiftCertificateResponseDto> getAllByRequestParams(@RequestParam Map<String,String> params) {
-        System.out.println(params);
         return converter.convertToResponseDtos(service.handleParametrizedGetRequest(params));
     }
 

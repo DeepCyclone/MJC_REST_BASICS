@@ -19,6 +19,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,13 +84,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public void linkAssociatedTags(long certificateID, List<Tag> tags) {
-        SimpleJdbcInsertOperations simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcOperations);
-        simpleJdbcInsert.withTableName("tag_m2m_gift_certificate");
-        Map<String,Object> params = new HashMap<>();
-        params.put("tmgc_gc_id",certificateID);
-        for(Tag tag:tags){
-            params.put("tmgc_t_id",tag.getId());
-            simpleJdbcInsert.execute(params);
+        for(Tag tag:tags) {
+            jdbcOperations.update(con -> {
+                PreparedStatement stmt = con.prepareStatement(INSERT_INTO_M2M, Statement.RETURN_GENERATED_KEYS);
+                stmt.setLong(1, tag.getId());
+                stmt.setLong(2, certificateID);
+                return stmt;
+            });
         }
     }
 

@@ -27,6 +27,7 @@ public class TagRepositoryImpl implements TagRepository {
     public static final String DELETE_BY_ID = "DELETE FROM tag WHERE t_id = ?";
     public static final String FETCH_ASSOCIATED_TAGS = "SELECT t_id,t_name FROM tag WHERE t_id IN (SELECT tmgc_t_id FROM tag_m2m_gift_certificate WHERE tmgc_gc_id = ?)";
     public static final String INSERT_INTO = "INSERT IGNORE INTO tag VALUES(?,?)";
+    public static final String GET_BY_NAME = "SELECT * FROM tag WHERE t_name = ?";
     public static final int MIN_AFFECTED_ROWS = 1;
 
     private final JdbcTemplate jdbcTemplate;
@@ -48,7 +49,7 @@ public class TagRepositoryImpl implements TagRepository {
             return getByID(holder.getKey().longValue());
         }
         else {
-            return null;
+            return getByName(object.getName());
         }
     }
 
@@ -84,7 +85,7 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Tag getByName(String name) {
-        return null;
+        return jdbcTemplate.queryForObject(GET_BY_NAME,new TagMapping(),name);
     }
 
 }
