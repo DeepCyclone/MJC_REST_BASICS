@@ -29,6 +29,7 @@ import static com.epam.esm.repository.query.CertificateQueryHolder.FETCH_ASSOCIA
 import static com.epam.esm.repository.query.CertificateQueryHolder.INSERT_INTO_M2M;
 import static com.epam.esm.repository.query.CertificateQueryHolder.READ_ALL;
 import static com.epam.esm.repository.query.CertificateQueryHolder.READ_BY_ID;
+import static com.epam.esm.repository.query.CertificateQueryHolder.READ_BY_NAME;
 import static com.epam.esm.repository.query.CertificateQueryHolder.UPDATE_QUERY;
 
 @Repository
@@ -129,10 +130,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public GiftCertificate getByName(String name) {
-        return null;
+        return jdbcOperations.queryForObject(READ_BY_NAME,new GiftCertificateMapping(),name);
     }
-
-
-
 
 }

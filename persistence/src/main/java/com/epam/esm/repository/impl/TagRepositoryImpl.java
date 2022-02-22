@@ -17,16 +17,17 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 
+import static com.epam.esm.repository.query.TagQueryHolder.DELETE_BY_ID;
 import static com.epam.esm.repository.query.TagQueryHolder.FETCH_ASSOCIATED_CERTIFICATES;
+import static com.epam.esm.repository.query.TagQueryHolder.GET_BY_NAME;
+import static com.epam.esm.repository.query.TagQueryHolder.INSERT_INTO;
+import static com.epam.esm.repository.query.TagQueryHolder.READ_ALL;
+import static com.epam.esm.repository.query.TagQueryHolder.READ_BY_ID;
 
 @Repository
 public class TagRepositoryImpl implements TagRepository {
 
-    public static final String READ_BY_ID = "SELECT * FROM tag WHERE t_id = ?";
-    public static final String READ_ALL = "SELECT * FROM tag";
-    public static final String DELETE_BY_ID = "DELETE FROM tag WHERE t_id = ?";
-    public static final String INSERT_INTO = "INSERT IGNORE INTO tag VALUES(?,?)";
-    public static final String GET_BY_NAME = "SELECT * FROM tag WHERE t_name = ?";
+
     public static final int MIN_AFFECTED_ROWS = 1;
 
     private final JdbcTemplate jdbcTemplate;
