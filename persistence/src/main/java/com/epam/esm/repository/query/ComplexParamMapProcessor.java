@@ -1,16 +1,11 @@
 package com.epam.esm.repository.query;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static com.epam.esm.repository.query.CertificateQueryHolder.AND;
-import static com.epam.esm.repository.query.CertificateQueryHolder.CERTIFICATE_NAME_SEARCH;
 import static com.epam.esm.repository.query.CertificateQueryHolder.CERTIFICATE_DESCRIPTION_SEARCH;
+import static com.epam.esm.repository.query.CertificateQueryHolder.CERTIFICATE_NAME_SEARCH;
 import static com.epam.esm.repository.query.CertificateQueryHolder.JOIN_PARAMS;
 import static com.epam.esm.repository.query.CertificateQueryHolder.ORDER_BY;
 import static com.epam.esm.repository.query.CertificateQueryHolder.READ_ALL;

@@ -1,11 +1,5 @@
 package com.epam.esm.dto.request;
 
-import javax.validation.constraints.Null;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
-import javax.validation.constraints.NotNull;
-import javax.validation.Valid;
-
 import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.PatchDTO;
 import lombok.AllArgsConstructor;
@@ -13,6 +7,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;

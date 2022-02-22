@@ -4,13 +4,10 @@ import com.epam.esm.exception.ErrorCodeHolder;
 import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.field.GiftCertificateField;
-import com.epam.esm.repository.mapping.ComplexCertificateMapping;
 import com.epam.esm.repository.mapping.GiftCertificateMapping;
 import com.epam.esm.repository.mapping.TagMapping;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
-import static com.epam.esm.repository.query.CertificateQueryHolder.*;
-
 import com.epam.esm.repository.query.ComplexParamMapProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -25,6 +22,14 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.epam.esm.repository.query.CertificateQueryHolder.DELETE_ENTRY;
+import static com.epam.esm.repository.query.CertificateQueryHolder.DETACH_ASSOCIATED_TAGS;
+import static com.epam.esm.repository.query.CertificateQueryHolder.FETCH_ASSOCIATED_TAGS;
+import static com.epam.esm.repository.query.CertificateQueryHolder.INSERT_INTO_M2M;
+import static com.epam.esm.repository.query.CertificateQueryHolder.READ_ALL;
+import static com.epam.esm.repository.query.CertificateQueryHolder.READ_BY_ID;
+import static com.epam.esm.repository.query.CertificateQueryHolder.UPDATE_QUERY;
 
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {

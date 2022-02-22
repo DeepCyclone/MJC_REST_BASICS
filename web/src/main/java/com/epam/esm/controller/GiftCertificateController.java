@@ -1,11 +1,11 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.converter.CertificateConverter;
 import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.dto.response.GiftCertificateResponseDto;
 import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.converter.CertificateConverter;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,10 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import javax.validation.Valid;
 
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
