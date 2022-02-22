@@ -1,8 +1,6 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.exception.ErrorCode;
-import com.epam.esm.exception.ErrorCodeHolder;
-import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.TagRepository;

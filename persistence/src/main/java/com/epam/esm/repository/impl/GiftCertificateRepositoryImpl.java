@@ -4,7 +4,6 @@ import com.epam.esm.exception.ErrorCodeHolder;
 import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.field.GiftCertificateField;
-import com.epam.esm.repository.mapping.ComplexCertificateMapping;
 import com.epam.esm.repository.mapping.GiftCertificateMapping;
 import com.epam.esm.repository.mapping.TagMapping;
 import com.epam.esm.repository.model.GiftCertificate;

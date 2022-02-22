@@ -23,7 +23,3 @@ dependencies {
     compileOnly 'org.hibernate.validator:hibernate-validator:6.0.22.Final'
 }
 
-test {
-    useJUnitPlatform()
-}
-
