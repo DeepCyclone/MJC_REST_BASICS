@@ -3,7 +3,9 @@ package com.epam.esm.repository.impl;
 import com.epam.esm.exception.ErrorCodeHolder;
 import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repository.TagRepository;
+import com.epam.esm.repository.mapping.GiftCertificateMapping;
 import com.epam.esm.repository.mapping.TagMapping;
+import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,13 +21,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.epam.esm.repository.query.TagQueryHolder.FETCH_ASSOCIATED_CERTIFICATES;
+
 @Repository
 public class TagRepositoryImpl implements TagRepository {
 
     public static final String READ_BY_ID = "SELECT * FROM tag WHERE t_id = ?";
     public static final String READ_ALL = "SELECT * FROM tag";
     public static final String DELETE_BY_ID = "DELETE FROM tag WHERE t_id = ?";
-    public static final String FETCH_ASSOCIATED_TAGS = "SELECT t_id,t_name FROM tag WHERE t_id IN (SELECT tmgc_t_id FROM tag_m2m_gift_certificate WHERE tmgc_gc_id = ?)";
     public static final String INSERT_INTO = "INSERT IGNORE INTO tag VALUES(?,?)";
     public static final String GET_BY_NAME = "SELECT * FROM tag WHERE t_name = ?";
     public static final int MIN_AFFECTED_ROWS = 1;
@@ -75,17 +78,18 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public boolean deleteByID(long ID) {
+        
         return jdbcTemplate.update(DELETE_BY_ID,ID) == MIN_AFFECTED_ROWS;
     }
 
-    @Override
-    public List<Tag> fetchAssociatedTags(long certificateID) {
-        return jdbcTemplate.query(FETCH_ASSOCIATED_TAGS,new TagMapping(),certificateID);
-    }
 
     @Override
     public Tag getByName(String name) {
         return jdbcTemplate.queryForObject(GET_BY_NAME,new TagMapping(),name);
     }
 
+    @Override
+    public List<GiftCertificate> fetchAssociatedCertificates(long tagID) {
+        return jdbcTemplate.query(FETCH_ASSOCIATED_CERTIFICATES,new GiftCertificateMapping(),tagID);
+    }
 }

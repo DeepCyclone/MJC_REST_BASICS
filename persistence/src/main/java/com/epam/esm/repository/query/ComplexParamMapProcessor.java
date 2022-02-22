@@ -26,6 +26,7 @@ public class ComplexParamMapProcessor {
     public static final String COLON = ":";
     public static final String PERCENT = "%";
     public static final String COMMA = ",";
+    public static final String EMPTY_PART = "";
 
 
     public static String buildQuery(Map<String,String> params){
@@ -45,7 +46,7 @@ public class ComplexParamMapProcessor {
             Optional<String> namePartValue = Optional.ofNullable(params.get(namePart));
             Optional<String> descriptionPartValue = Optional.ofNullable(params.get(descriptionPart));
             tagNameValue.ifPresent(val -> searchingQuery.append(TAG_NAME_FILTER).append(COLON).append(tagName));
-            namePartValue.ifPresent(val-> {
+            namePartValue.ifPresent(val -> {
                 if(tagNameValue.isPresent()){searchingQuery.append(AND);}
                 searchingQuery.append(CERTIFICATE_NAME_SEARCH).append(COLON).append(namePart);
             });
@@ -55,7 +56,7 @@ public class ComplexParamMapProcessor {
             });
             return searchingQuery.toString();
         }
-        return "";
+        return EMPTY_PART;
     }
 
     private static String appendQueryWithSorting(Map<String,String> params){
@@ -71,7 +72,7 @@ public class ComplexParamMapProcessor {
             dateSortOrderValue.ifPresent(order -> orderQuery.append("gc_last_update_date ").append(order));
             return orderQuery.toString();
         }
-        return "";
+        return EMPTY_PART;
     }
 
 }

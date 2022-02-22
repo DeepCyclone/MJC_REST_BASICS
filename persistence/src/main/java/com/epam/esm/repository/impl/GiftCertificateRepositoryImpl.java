@@ -6,6 +6,7 @@ import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.field.GiftCertificateField;
 import com.epam.esm.repository.mapping.ComplexCertificateMapping;
 import com.epam.esm.repository.mapping.GiftCertificateMapping;
+import com.epam.esm.repository.mapping.TagMapping;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import static com.epam.esm.repository.query.CertificateQueryHolder.*;
@@ -79,7 +80,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public boolean deleteByID(long ID) {
-        return jdbcOperations.update(DELETE_ENTRY,ID) == MIN_AFFECTED_ROWS;
+        return jdbcOperations.update(DELETE_ENTRY,ID) >= MIN_AFFECTED_ROWS;
     }
 
     @Override
@@ -97,6 +98,11 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     @Override
     public boolean detachAssociatedTags(long certificateID) {
         return jdbcOperations.update(DETACH_ASSOCIATED_TAGS,certificateID) >= MIN_AFFECTED_ROWS;
+    }
+
+    @Override
+    public List<Tag> fetchAssociatedTags(long certificateID) {
+        return jdbcOperations.query(FETCH_ASSOCIATED_TAGS,new TagMapping(),certificateID);
     }
 
     @Override

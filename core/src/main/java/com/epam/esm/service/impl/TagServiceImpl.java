@@ -23,23 +23,26 @@ public class TagServiceImpl implements TagService {
         this.tagRepository = tagRepository;
     }
 
+    @Override
     public List<Tag> getAll(){
         return tagRepository.readAll();
     }
+    @Override
     public Tag getByID(long ID){
         return tagRepository.getByID(ID);
     }
+    @Override
     public Tag addEntity(Tag tag) {
         return tagRepository.create(tag);
     }
 
+    @Override
     @Transactional
-    public boolean deleteByID(long ID){
+    public void deleteByID(long ID){
         boolean flushingResult = tagRepository.deleteByID(ID);
         if(!flushingResult){
             throw new ServiceException(ErrorCode.TAG_DELETION_ERROR,"Couldn't delete tag with ID = "+ID);
         }
-        return flushingResult;
     }
 
 

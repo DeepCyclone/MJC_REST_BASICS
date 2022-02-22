@@ -35,6 +35,6 @@ public class GiftCertificateDto implements Serializable {
     @NotNull
     private BigDecimal price;
     @NotNull
-    private Integer duration;
+    private int duration;
     private List<@Valid TagDto> associatedTags;
 }

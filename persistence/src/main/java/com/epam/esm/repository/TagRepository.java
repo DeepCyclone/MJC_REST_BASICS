@@ -1,5 +1,6 @@
 package com.epam.esm.repository;
 
+import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 
 import java.util.List;
@@ -9,5 +10,5 @@ import java.util.List;
 * @author Flexus
 * */
 public interface TagRepository extends GenericRepository<Tag>,Identifiable<Tag>,Nameable<Tag>{
-    List<Tag> fetchAssociatedTags(long certificateID);
+    List<GiftCertificate> fetchAssociatedCertificates(long tagID);
 }

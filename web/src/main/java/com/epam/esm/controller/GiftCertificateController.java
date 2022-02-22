@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.dto.response.GiftCertificateResponseDto;
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/api/v1/certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
 public class GiftCertificateController {
 
     private final GiftCertificateServiceImpl service;
@@ -68,7 +69,7 @@ public class GiftCertificateController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public GiftCertificateResponseDto createCertificate(@RequestBody @Valid GiftCertificateDto certificateDto) {
+    public GiftCertificateResponseDto createCertificate(@RequestBody @Validated(CreateDTO.class) GiftCertificateDto certificateDto) {
         GiftCertificate certificate = converter.convertFromRequestDto(certificateDto);
         return converter.convertToResponseDto(service.addEntity(certificate));
     }

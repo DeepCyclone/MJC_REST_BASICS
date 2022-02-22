@@ -83,18 +83,19 @@ public class GiftCertificateServiceTest {
         Assertions.assertDoesNotThrow(()->service.deleteByID(1L));
     }
 
-    @Test
-    void addEntity(){
-        Mockito.when(giftCertificateRepository.create(Mockito.any(GiftCertificate.class))).thenReturn(createdCertificateFromDto);
-        Mockito.when(giftCertificateRepository.getByID(Mockito.anyLong())).thenReturn(createdCertificateFromDto);
-        GiftCertificate entity = service.addEntity(dtoCertificate);
-        Assertions.assertEquals(createdCertificateFromDto,entity);
-    }
-
+//    @Test
+//    void addEntity(){
+//        Mockito.when(giftCertificateRepository.create(Mockito.any(GiftCertificate.class))).thenReturn(createdCertificateFromDto);
+//        Mockito.when(giftCertificateRepository.getByID(Mockito.anyLong())).thenReturn(createdCertificateFromDto);
+//        GiftCertificate entity = service.addEntity(dtoCertificate);
+//        Assertions.assertEquals(createdCertificateFromDto,entity);
+//    }
+//
 //    @Test
 //    void updateEntity(){
+//        Mockito.when(giftCertificateRepository.getByID(Mockito.eq(1L))).thenReturn(certificate);
 //        Mockito.when(giftCertificateRepository.update(Mockito.mock(GiftCertificate.class),1L)).thenReturn(true);
-////        Assertions.assertEquals(service.update(certificate));
+//        Assertions.assertEquals(service.update(certificate),certificate);
 //    }
 
     @Test

@@ -20,5 +20,6 @@ import java.io.Serializable;
 public class TagDto implements Serializable {
     private long id;
     @Size(min = 3,max = 10,message = "tag name length constraints = [3,10]")
+    @NotNull
     private String name;
 }

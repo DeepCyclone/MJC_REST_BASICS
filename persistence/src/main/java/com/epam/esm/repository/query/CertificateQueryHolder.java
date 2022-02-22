@@ -13,6 +13,7 @@ public class CertificateQueryHolder {
     public static final String TAG_NAME_FILTER = "  t_name = ";
     public static final String INSERT_INTO_M2M = "INSERT IGNORE INTO tag_m2m_gift_certificate VALUES (?,?)";
     public static final String CERTIFICATE_NAME_SEARCH = " gc_name like binary ";
+    public static final String FETCH_ASSOCIATED_TAGS = "SELECT t_id,t_name FROM tag WHERE t_id IN (SELECT tmgc_t_id FROM tag_m2m_gift_certificate WHERE tmgc_gc_id = ?)";
     public static final String CERTIFICATE_DESCRIPTION_SEARCH = " gc_description like binary ";
     public static final String ORDER_BY = " ORDER BY ";
     public static final String WHERE = " WHERE ";

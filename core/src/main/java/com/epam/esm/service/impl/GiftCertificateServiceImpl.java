@@ -37,19 +37,22 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         this.tagRepository = tagRepository;
     }
 
+    @Override
     public GiftCertificate getByID(long ID) {
         GiftCertificate certificate = certificateRepository.getByID(ID);
-        certificate.setAssociatedTags(tagRepository.fetchAssociatedTags(ID));
+        certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(ID));
         return certificate;
     }
 
-    public GiftCertificate addEntity(GiftCertificate certificateDto) throws RepositoryException {
+    @Override
+    public GiftCertificate addEntity(GiftCertificate certificateDto) {
         GiftCertificate baseCert = certificateRepository.create(certificateDto);
         List<Tag> savedTags = saveAssociatedTags(certificateDto.getAssociatedTags());
         certificateRepository.linkAssociatedTags(baseCert.getId(),savedTags);
         return getByID(baseCert.getId());
     }
 
+    @Override
     @Transactional
     public void deleteByID(long ID){
         boolean result = certificateRepository.deleteByID(ID);
@@ -58,6 +61,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
+    @Override
     @Transactional
     public GiftCertificate update(GiftCertificate certificatePatch) {
         GiftCertificate originalCertificate = getByID(certificatePatch.getId());
@@ -76,6 +80,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return getByID(certificatePatch.getId());
     }
 
+    @Override
     public List<Tag> saveAssociatedTags(List<Tag> tags) {
         List<Tag> tagsIdentifiable = new ArrayList<>();
         if(tags!=null) {
@@ -86,12 +91,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return tagsIdentifiable;
     }
 
-
+    @Override
     public List<GiftCertificate> handleParametrizedGetRequest(Map<String,String> params){
         checkInvalidValuedParams(params);
         List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(params);
         for(GiftCertificate certificate:certificates){
-            certificate.setAssociatedTags(tagRepository.fetchAssociatedTags(certificate.getId()));
+            certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(certificate.getId()));
         }
         return certificates;
     }
