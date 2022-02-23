@@ -22,8 +22,10 @@ public class TagConverter implements ConverterTemplate<Tag, TagDto, TagResponseD
     @Override
     public List<Tag> convertFromRequestDtos(List<TagDto> dtos) {
         List<Tag> tags = new ArrayList<>();
-        for(TagDto dto:dtos){
-            tags.add(convertFromRequestDto(dto));
+        if(dtos!=null) {
+            for (TagDto dto : dtos) {
+                tags.add(convertFromRequestDto(dto));
+            }
         }
         return tags;
     }

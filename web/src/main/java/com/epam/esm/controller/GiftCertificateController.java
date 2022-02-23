@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +59,7 @@ public class GiftCertificateController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateCertificate(@RequestBody @Validated({PatchDTO.class}) GiftCertificateDto certificateDtoPatch){
+    public ResponseEntity<?> updateCertificate(@RequestBody @Validated(PatchDTO.class) GiftCertificateDto certificateDtoPatch){
         GiftCertificate certificate = converter.convertFromRequestDto(certificateDtoPatch);
         GiftCertificateResponseDto a = converter.convertToResponseDto(service.update(certificate));
         return new ResponseEntity<>(a,HttpStatus.CREATED);

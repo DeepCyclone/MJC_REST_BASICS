@@ -54,7 +54,7 @@ public class TagController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public TagResponseDto createTag(@Validated(CreateDTO.class) @RequestBody TagDto tagDto){
+    public TagResponseDto createTag(@RequestBody @Validated(CreateDTO.class) TagDto tagDto){
         Tag tag = tagConverter.convertFromRequestDto(tagDto);
         return tagConverter.convertToResponseDto(tagServiceImpl.addEntity(tag));
     }
