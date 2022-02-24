@@ -1,7 +1,5 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.exception.ErrorCodeHolder;
-import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.mapping.GiftCertificateMapping;
 import com.epam.esm.repository.mapping.TagMapping;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Optional;
 
 import static com.epam.esm.repository.query.TagQueryHolder.DELETE_BY_ID;
 import static com.epam.esm.repository.query.TagQueryHolder.FETCH_ASSOCIATED_CERTIFICATES;
@@ -88,7 +85,6 @@ public class TagRepositoryImpl implements TagRepository {
         }
         catch (DataAccessException e){
             return null;
-//            throw new RepositoryException(ErrorCodeHolder.TAG_NOT_FOUND,"Cannot fetch tag["+ID+"]");
         }
     }
 
@@ -106,7 +102,6 @@ public class TagRepositoryImpl implements TagRepository {
         }
         catch (DataAccessException e){
             return null;
-//            throw new RepositoryException(ErrorCodeHolder.TAG_NOT_FOUND,"Cannot fetch tag["+name+"]");
         }
     }
 

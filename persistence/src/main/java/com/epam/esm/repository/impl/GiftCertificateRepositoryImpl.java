@@ -1,6 +1,5 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.exception.ErrorCodeHolder;
 import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.field.GiftCertificateField;
@@ -81,7 +80,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         }
         catch (DataAccessException e){
             return null;
-//            throw new RepositoryException(ErrorCodeHolder.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate["+ID+"]");
         }
     }
 

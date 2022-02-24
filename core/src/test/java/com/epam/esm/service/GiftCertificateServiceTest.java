@@ -98,7 +98,7 @@ public class GiftCertificateServiceTest {
 
     @Test
     void updateNonExistingEntity(){
-        Mockito.when(giftCertificateRepository.getByID(Mockito.eq(1L))).thenThrow(RepositoryException.class);
-        Assertions.assertThrows(RepositoryException.class,() -> service.update(certificate));
+        Mockito.when(giftCertificateRepository.getByID(Mockito.eq(1L))).thenReturn(null);
+        Assertions.assertThrows(ServiceException.class,() -> service.update(certificate));
     }
 }
