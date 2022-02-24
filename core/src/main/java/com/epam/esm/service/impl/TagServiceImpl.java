@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -28,7 +29,8 @@ public class TagServiceImpl implements TagService {
     }
     @Override
     public Tag getByID(long ID){
-        return tagRepository.getByID(ID);
+        return Optional.ofNullable(tagRepository.getByID(ID)).orElseThrow(
+                ()->new ServiceException(ErrorCode.TAG_NOT_FOUND,"Couldn't fetch tag with ID = "+ID));
     }
     @Override
     public Tag addEntity(Tag tag) {

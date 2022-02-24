@@ -8,6 +8,7 @@ import com.epam.esm.repository.mapping.TagMapping;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -16,11 +17,13 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
 
 import static com.epam.esm.repository.query.TagQueryHolder.DELETE_BY_ID;
 import static com.epam.esm.repository.query.TagQueryHolder.FETCH_ASSOCIATED_CERTIFICATES;
 import static com.epam.esm.repository.query.TagQueryHolder.GET_BY_NAME;
-import static com.epam.esm.repository.query.TagQueryHolder.INSERT_INTO;
+import static com.epam.esm.repository.query.TagQueryHolder.INSERT_INTO_BY_NAME;
+import static com.epam.esm.repository.query.TagQueryHolder.INSERT_INTO_WITH_ID;
 import static com.epam.esm.repository.query.TagQueryHolder.READ_ALL;
 import static com.epam.esm.repository.query.TagQueryHolder.READ_BY_ID;
 
@@ -40,16 +43,31 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public Tag create(Tag object) {
         KeyHolder holder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement stmt = con.prepareStatement(INSERT_INTO, Statement.RETURN_GENERATED_KEYS);
-            stmt.setLong(1,object.getId());
-            stmt.setString(2,object.getName());
-            return stmt;},holder);
+        if(object.getId() > 0) {
+            jdbcTemplate.update(con -> {
+                PreparedStatement stmt = con.prepareStatement(INSERT_INTO_WITH_ID, Statement.RETURN_GENERATED_KEYS);
+                stmt.setLong(1, object.getId());
+                stmt.setString(2, object.getName());
+                return stmt;
+            }, holder);
+        }
+        else if(object.getId() == 0){
+            jdbcTemplate.update(con -> {
+                PreparedStatement stmt = con.prepareStatement(INSERT_INTO_BY_NAME, Statement.RETURN_GENERATED_KEYS);
+                stmt.setString(1, object.getName());
+                return stmt;
+            }, holder);
+        }
         if(holder.getKey()!=null) {
             return getByID(holder.getKey().longValue());
         }
         else {
-            return getByName(object.getName());
+            if(object.getName()!=null){
+                return getByName(object.getName());
+            }
+            else {
+                return getByID(object.getId());
+            }
         }
     }
 
@@ -68,21 +86,28 @@ public class TagRepositoryImpl implements TagRepository {
         try {
             return jdbcTemplate.queryForObject(READ_BY_ID, new TagMapping(), ID);
         }
-        catch (Exception e){
-            throw new RepositoryException(ErrorCodeHolder.TAG_NOT_FOUND,"Cannot fetch tag["+ID+"]");
+        catch (DataAccessException e){
+            return null;
+//            throw new RepositoryException(ErrorCodeHolder.TAG_NOT_FOUND,"Cannot fetch tag["+ID+"]");
         }
     }
 
     @Override
     public boolean deleteByID(long ID) {
-        
-        return jdbcTemplate.update(DELETE_BY_ID,ID) == MIN_AFFECTED_ROWS;
+        return fetchAssociatedCertificates(ID).isEmpty() &&
+                jdbcTemplate.update(DELETE_BY_ID,ID) >= MIN_AFFECTED_ROWS;
     }
 
 
     @Override
     public Tag getByName(String name) {
-        return jdbcTemplate.queryForObject(GET_BY_NAME,new TagMapping(),name);
+        try {
+            return jdbcTemplate.queryForObject(GET_BY_NAME, new TagMapping(), name);
+        }
+        catch (DataAccessException e){
+            return null;
+//            throw new RepositoryException(ErrorCodeHolder.TAG_NOT_FOUND,"Cannot fetch tag["+name+"]");
+        }
     }
 
     @Override

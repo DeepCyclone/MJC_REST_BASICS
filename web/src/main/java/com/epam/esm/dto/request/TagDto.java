@@ -7,8 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
@@ -18,8 +20,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 public class TagDto implements Serializable {
-    @Positive(message = "ID should be positive number",groups = {CreateDTO.class, PatchDTO.class})
+    @PositiveOrZero(message = "ID should be positive number",groups = {CreateDTO.class, PatchDTO.class})
     private long id;
+    @NotBlank(message = "tag name not blank constraints",groups = {CreateDTO.class, PatchDTO.class})
     @Size(min = 2,max = 10,message = "tag name length constraints = [2,10]",groups = {CreateDTO.class,PatchDTO.class})
     private String name;
 }

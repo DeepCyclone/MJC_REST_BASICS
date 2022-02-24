@@ -80,7 +80,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             return jdbcOperations.queryForObject(READ_BY_ID, new GiftCertificateMapping(), ID);
         }
         catch (DataAccessException e){
-            throw new RepositoryException(ErrorCodeHolder.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate["+ID+"]");
+            return null;
+//            throw new RepositoryException(ErrorCodeHolder.CERTIFICATE_NOT_FOUND,"Cannot fetch certificate["+ID+"]");
         }
     }
 
@@ -92,12 +93,14 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     @Override
     public void linkAssociatedTags(long certificateID, List<Tag> tags) {
         for(Tag tag:tags) {
-            jdbcOperations.update(con -> {
-                PreparedStatement stmt = con.prepareStatement(INSERT_INTO_M2M, Statement.RETURN_GENERATED_KEYS);
-                stmt.setLong(1, tag.getId());
-                stmt.setLong(2, certificateID);
-                return stmt;
-            });
+            if(tag!=null) {
+                jdbcOperations.update(con -> {
+                    PreparedStatement stmt = con.prepareStatement(INSERT_INTO_M2M, Statement.RETURN_GENERATED_KEYS);
+                    stmt.setLong(1, tag.getId());
+                    stmt.setLong(2, certificateID);
+                    return stmt;
+                });
+            }
         }
     }
 
@@ -130,7 +133,12 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public GiftCertificate getByName(String name) {
-        return jdbcOperations.queryForObject(READ_BY_NAME,new GiftCertificateMapping(),name);
+        try {
+            return jdbcOperations.queryForObject(READ_BY_NAME, new GiftCertificateMapping(), name);
+        }
+        catch (DataAccessException e){
+            return null;
+        }
     }
 
 }

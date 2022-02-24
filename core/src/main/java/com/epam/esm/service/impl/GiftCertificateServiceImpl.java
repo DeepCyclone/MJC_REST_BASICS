@@ -37,7 +37,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificate getByID(long ID) {
-        GiftCertificate certificate = certificateRepository.getByID(ID);
+        GiftCertificate certificate = Optional.ofNullable(certificateRepository.getByID(ID)).orElseThrow(
+                ()->new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"couldn't fetch certificate with ID = "+ID));
         certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(ID));
         return certificate;
     }

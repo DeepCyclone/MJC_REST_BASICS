@@ -5,6 +5,7 @@ public class TagQueryHolder {
     public static final String READ_BY_ID = "SELECT * FROM tag WHERE t_id = ?";
     public static final String READ_ALL = "SELECT * FROM tag";
     public static final String DELETE_BY_ID = "DELETE FROM tag WHERE t_id = ?";
-    public static final String INSERT_INTO = "INSERT IGNORE INTO tag VALUES(?,?)";
+    public static final String INSERT_INTO_WITH_ID = "INSERT IGNORE INTO tag VALUES(?,?)";
+    public static final String INSERT_INTO_BY_NAME = "INSERT IGNORE INTO tag(t_name) VALUES(?)";
     public static final String GET_BY_NAME = "SELECT * FROM tag WHERE t_name = ?";
 }
