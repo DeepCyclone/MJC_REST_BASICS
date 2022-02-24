@@ -1,7 +1,5 @@
 package com.epam.esm.repository;
 
-import com.epam.esm.exception.RepositoryException;
-
 import java.util.List;
 
 

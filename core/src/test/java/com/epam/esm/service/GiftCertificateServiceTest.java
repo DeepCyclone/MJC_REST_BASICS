@@ -1,18 +1,16 @@
 package com.epam.esm.service;
 
+import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.TagRepository;
-import com.epam.esm.repository.mapping.GiftCertificateMapping;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,14 +33,14 @@ public class GiftCertificateServiceTest {
     private static GiftCertificateServiceImpl service = new GiftCertificateServiceImpl(giftCertificateRepository,tagRepository);
 
     private static final GiftCertificate certificate = GiftCertificate.builder().id(1).build();
-    private static final GiftCertificate dtoCertificate = GiftCertificate.builder().name("123").build();
-    private static final GiftCertificate createdCertificateFromDto = GiftCertificate.builder().id(1L).name("123").build();
+    private static final GiftCertificate newCert = GiftCertificate.builder().build();
 
     private static final List<GiftCertificate> certificates = Arrays.asList(new GiftCertificate());
-    private static final List<GiftCertificate> taggedCertificates = Arrays.asList(GiftCertificate.builder().associatedTags(new ArrayList<>()).build());
     private static final List<GiftCertificate> parametrizedCertificates = Arrays.asList(GiftCertificate.builder().name("Aaaa").build());
 
     private static final List<Tag> tags = Collections.emptyList();
+    private static final Tag emptyTag = Tag.builder().build();
+    private static final Tag IDTag = Tag.builder().id(1L).build();
 
 
     @BeforeEach
@@ -83,23 +81,24 @@ public class GiftCertificateServiceTest {
         Assertions.assertDoesNotThrow(()->service.deleteByID(1L));
     }
 
-//    @Test
-//    void addEntity(){
-//        Mockito.when(giftCertificateRepository.create(Mockito.any(GiftCertificate.class))).thenReturn(createdCertificateFromDto);
-//        Mockito.when(giftCertificateRepository.getByID(Mockito.anyLong())).thenReturn(createdCertificateFromDto);
-//        GiftCertificate entity = service.addEntity(dtoCertificate);
-//        Assertions.assertEquals(createdCertificateFromDto,entity);
-//    }
-//
-//    @Test
-//    void updateEntity(){
-//        Mockito.when(giftCertificateRepository.getByID(Mockito.eq(1L))).thenReturn(certificate);
-//        Mockito.when(giftCertificateRepository.update(Mockito.mock(GiftCertificate.class),1L)).thenReturn(true);
-//        Assertions.assertEquals(service.update(certificate),certificate);
-//    }
+    @Test
+    void addEntity(){
+        Mockito.when(giftCertificateRepository.create(newCert)).thenReturn(certificate);
+        Mockito.when(giftCertificateRepository.getByID(Mockito.eq(1L))).thenReturn(certificate);
+        GiftCertificate entity = service.addEntity(newCert);
+        Assertions.assertEquals(certificate,entity);
+    }
+
+    @Test
+    void updateEntity(){
+        Mockito.when(giftCertificateRepository.update(certificate,1L)).thenReturn(true);
+        Mockito.when(giftCertificateRepository.getByID(Mockito.eq(1L))).thenReturn(certificate);
+        Assertions.assertEquals(certificate,service.update(certificate));
+    }
 
     @Test
     void updateNonExistingEntity(){
-
+        Mockito.when(giftCertificateRepository.getByID(Mockito.eq(1L))).thenThrow(RepositoryException.class);
+        Assertions.assertThrows(RepositoryException.class,() -> service.update(certificate));
     }
 }

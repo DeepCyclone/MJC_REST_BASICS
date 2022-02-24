@@ -2,8 +2,8 @@ package com.epam.esm.repository.query;
 
 public class CertificateQueryHolder {
     public static final String READ_ALL = "SELECT * FROM gift_certificate";
-    public static final String ID_FILTER = " WHERE gc_id = ?";
-    public static final String READ_BY_ID = READ_ALL + ID_FILTER;
+    public static final String READ_BY_ID = "SELECT * FROM gift_certificate WHERE gc_id = ?";
+    public static final String READ_BY_NAME = "SELECT * FROM gift_certificate WHERE gc_name = ?";
     public static final String DELETE_ENTRY = "DELETE FROM gift_certificate WHERE gc_id = ?";
     public static final String DETACH_ASSOCIATED_TAGS = "DELETE FROM tag_m2m_gift_certificate WHERE tmgc_gc_id = ?";
     public static final String UPDATE_QUERY = "UPDATE gift_certificate SET gc_name=?, gc_description=?, gc_price=?, gc_duration=? WHERE gc_id=?";
