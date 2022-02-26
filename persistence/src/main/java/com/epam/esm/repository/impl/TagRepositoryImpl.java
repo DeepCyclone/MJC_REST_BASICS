@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
 
 import static com.epam.esm.repository.query.TagQueryHolder.DELETE_BY_ID;
 import static com.epam.esm.repository.query.TagQueryHolder.FETCH_ASSOCIATED_CERTIFICATES;
@@ -56,14 +57,14 @@ public class TagRepositoryImpl implements TagRepository {
             }, holder);
         }
         if(holder.getKey()!=null) {
-            return getByID(holder.getKey().longValue());
+            return getByID(holder.getKey().longValue()).get();
         }
         else {
             if(object.getName()!=null){
-                return getByName(object.getName());
+                return getByName(object.getName()).get();
             }
             else {
-                return getByID(object.getId());
+                return getByID(object.getId()).get();
             }
         }
     }
@@ -79,12 +80,12 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public Tag getByID(long ID) {
+    public Optional<Tag> getByID(long ID) {
         try {
-            return jdbcTemplate.queryForObject(READ_BY_ID, new TagMapping(), ID);
+            return Optional.of(jdbcTemplate.queryForObject(READ_BY_ID, new TagMapping(), ID));
         }
         catch (DataAccessException e){
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -96,12 +97,12 @@ public class TagRepositoryImpl implements TagRepository {
 
 
     @Override
-    public Tag getByName(String name) {
+    public Optional<Tag> getByName(String name) {
         try {
-            return jdbcTemplate.queryForObject(GET_BY_NAME, new TagMapping(), name);
+            return Optional.of(jdbcTemplate.queryForObject(GET_BY_NAME, new TagMapping(), name));
         }
         catch (DataAccessException e){
-            return null;
+            return Optional.empty();
         }
     }
 

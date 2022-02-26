@@ -21,8 +21,8 @@ import static com.epam.esm.exception.ErrorCode.CERTIFICATE_BAD_REQUEST_PARAMS;
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
-    private static final String nameSortOrder = "nameSortOrder";
-    private static final String dateSortOrder = "dateSortOrder";
+    private static final String NAME_SORT_ORDER = "nameSortOrder";
+    private static final String DATE_SORT_ORDER = "dateSortOrder";
     private static final String ASCENDING_SORT = "ASC";
     private static final String DESCENDING_SORT = "DESC";
 
@@ -36,10 +36,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public GiftCertificate getByID(long ID) {
-        GiftCertificate certificate = Optional.ofNullable(certificateRepository.getByID(ID)).orElseThrow(
-                ()->new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"couldn't fetch certificate with ID = "+ID));
-        certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(ID));
+    public GiftCertificate getByID(long id) {
+        GiftCertificate certificate = certificateRepository.getByID(id).orElseThrow(
+                ()->new ServiceException(ErrorCode.CERTIFICATE_NOT_FOUND,"couldn't fetch certificate with id = "+ id));
+        certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(id));
         return certificate;
     }
 
@@ -53,10 +53,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public void deleteByID(long ID){
-        boolean result = certificateRepository.deleteByID(ID);
+    public void deleteByID(long id){
+        boolean result = certificateRepository.deleteByID(id);
+
         if(!result){
-            throw new ServiceException(ErrorCode.CERTIFICATE_DELETION_ERROR,"Cannot delete cert with ID = "+ID);
+            throw new ServiceException(ErrorCode.CERTIFICATE_DELETION_ERROR,"Cannot delete cert with id = "+id);
         }
     }
 
@@ -69,12 +70,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         Optional.ofNullable(certificatePatch.getPrice()).ifPresent(originalCertificate::setPrice);
         originalCertificate.setDuration(certificatePatch.getDuration());
         detachAssociatedTags(certificatePatch.getId());
-        if (certificatePatch.getAssociatedTags() != null) {
-            List<Tag> tags = saveAssociatedTags(certificatePatch.getAssociatedTags());
-            if(!tags.isEmpty()) {
-                certificateRepository.linkAssociatedTags(certificatePatch.getId(), tags);
-            }
-        }
+        Optional.ofNullable(certificatePatch.getAssociatedTags()).ifPresent(tags -> {
+            List<Tag> savedTags = saveAssociatedTags(tags);
+            certificateRepository.linkAssociatedTags(certificatePatch.getId(),savedTags);
+        });
         certificateRepository.update(originalCertificate,certificatePatch.getId());
         return getByID(certificatePatch.getId());
     }
@@ -82,11 +81,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<Tag> saveAssociatedTags(List<Tag> tags) {
         List<Tag> tagsIdentifiable = new ArrayList<>();
-        if(tags!=null) {
-            for (Tag tag : tags) {
-                tagsIdentifiable.add(tagRepository.create(tag));
-            }
-        }
+        tags.forEach(tag-> tagsIdentifiable.add(tagRepository.create(tag)));
         return tagsIdentifiable;
     }
 
@@ -94,15 +89,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public List<GiftCertificate> handleParametrizedGetRequest(Map<String,String> params){
         checkInvalidValuedParams(params);
         List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(params);
-        for(GiftCertificate certificate:certificates){
-            certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(certificate.getId()));
-        }
+        certificates.forEach(certificate->certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(certificate.getId())));
         return certificates;
     }
 
     private void checkInvalidValuedParams(Map<String,String> params){
-        if((params.containsKey(nameSortOrder) && !isAllowedOrderDirection(params.get(nameSortOrder))) ||
-                (params.containsKey(dateSortOrder) && !isAllowedOrderDirection(params.get(dateSortOrder)))){
+        if((params.containsKey(NAME_SORT_ORDER) && !isAllowedOrderDirection(params.get(NAME_SORT_ORDER))) ||
+                (params.containsKey(DATE_SORT_ORDER) && !isAllowedOrderDirection(params.get(DATE_SORT_ORDER)))){
             throw new ServiceException(CERTIFICATE_BAD_REQUEST_PARAMS,"allowed values for sorting params are ASC and DESC");
         }
     }

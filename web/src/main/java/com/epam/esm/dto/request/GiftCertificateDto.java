@@ -11,7 +11,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
@@ -39,7 +38,6 @@ public class GiftCertificateDto implements Serializable {
     private BigDecimal price;
     @NotNull(message = "duration couldn't be empty",groups = {CreateDTO.class,PatchDTO.class})
     @PositiveOrZero(message = "Duration values must be in [0;+inf)",groups = {CreateDTO.class,PatchDTO.class})
-    @Pattern(regexp = "//d+",groups = {CreateDTO.class,PatchDTO.class},message = "Duration must be a number")
     private Integer duration;
     private List<@Valid TagDto> associatedTags;
 }

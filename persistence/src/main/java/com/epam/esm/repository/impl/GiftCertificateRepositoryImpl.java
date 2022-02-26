@@ -21,6 +21,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.epam.esm.repository.query.CertificateQueryHolder.DELETE_ENTRY;
 import static com.epam.esm.repository.query.CertificateQueryHolder.DETACH_ASSOCIATED_TAGS;
@@ -55,7 +56,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         params.put(GiftCertificateField.PRICE,object.getPrice());
         params.put(GiftCertificateField.DURATION,object.getDuration());
         Number key = simpleJdbcInsert.executeAndReturnKey(params);
-        return getByID(key.longValue());
+        return getByID(key.longValue()).get();
     }
 
     @Override
@@ -74,12 +75,12 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public GiftCertificate getByID(long ID){
+    public Optional<GiftCertificate> getByID(long ID){
         try {
-            return jdbcOperations.queryForObject(READ_BY_ID, new GiftCertificateMapping(), ID);
+            return Optional.of(jdbcOperations.queryForObject(READ_BY_ID, new GiftCertificateMapping(), ID));
         }
         catch (DataAccessException e){
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -130,12 +131,12 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public GiftCertificate getByName(String name) {
+    public Optional<GiftCertificate> getByName(String name){
         try {
-            return jdbcOperations.queryForObject(READ_BY_NAME, new GiftCertificateMapping(), name);
+            return Optional.of(jdbcOperations.queryForObject(READ_BY_NAME, new GiftCertificateMapping(), name));
         }
         catch (DataAccessException e){
-            return null;
+            return Optional.empty();
         }
     }
 

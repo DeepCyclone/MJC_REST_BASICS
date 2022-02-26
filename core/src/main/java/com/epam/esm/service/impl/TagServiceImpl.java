@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -28,9 +27,9 @@ public class TagServiceImpl implements TagService {
         return tagRepository.readAll();
     }
     @Override
-    public Tag getByID(long ID){
-        return Optional.ofNullable(tagRepository.getByID(ID)).orElseThrow(
-                ()->new ServiceException(ErrorCode.TAG_NOT_FOUND,"Couldn't fetch tag with ID = "+ID));
+    public Tag getByID(long id){
+        return tagRepository.getByID(id).orElseThrow(
+                ()->new ServiceException(ErrorCode.TAG_NOT_FOUND,"Couldn't fetch tag with id = "+id));
     }
     @Override
     public Tag addEntity(Tag tag) {
@@ -39,10 +38,10 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public void deleteByID(long ID){
-        boolean flushingResult = tagRepository.deleteByID(ID);
+    public void deleteByID(long id){
+        boolean flushingResult = tagRepository.deleteByID(id);
         if(!flushingResult){
-            throw new ServiceException(ErrorCode.TAG_DELETION_ERROR,"Couldn't delete tag with ID = "+ID);
+            throw new ServiceException(ErrorCode.TAG_DELETION_ERROR,"Couldn't delete tag with id = "+id);
         }
     }
 

@@ -33,8 +33,7 @@ public class DatabaseConfig {
         hikariConfig.setPassword(password);
         hikariConfig.setJdbcUrl(connectionURL);
         hikariConfig.setMaximumPoolSize(maxPoolSize);
-        HikariDataSource dataSource = new HikariDataSource(hikariConfig);
-        return dataSource;
+        return new HikariDataSource(hikariConfig);
     }
 
 }
