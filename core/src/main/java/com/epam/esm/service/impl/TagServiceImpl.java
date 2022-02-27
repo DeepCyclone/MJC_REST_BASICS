@@ -45,5 +45,8 @@ public class TagServiceImpl implements TagService {
         }
     }
 
+    @Override
+    public void updateByID(long id) throws UnsupportedOperationException {}
+
 
 }

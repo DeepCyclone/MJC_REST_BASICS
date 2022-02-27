@@ -1,11 +1,11 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.converter.TagConverter;
+import com.epam.esm.converter.impl.TagConverter;
 import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.dto.response.TagResponseDto;
 import com.epam.esm.repository.model.Tag;
-import com.epam.esm.service.impl.TagServiceImpl;
+import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,29 +26,29 @@ import java.util.List;
 public class TagController {
 
 
-    private final TagServiceImpl tagServiceImpl;
+    private final TagService tagService;
     private final TagConverter tagConverter;
 
     @Autowired
-    public TagController(TagServiceImpl tagServiceImpl, TagConverter tagConverter) {
-        this.tagServiceImpl = tagServiceImpl;
+    public TagController(TagService tagService, TagConverter tagConverter) {
+        this.tagService = tagService;
         this.tagConverter = tagConverter;
     }
 
     @GetMapping(value = "/{id:\\d+}")
     public TagResponseDto getByID(@PathVariable("id") Long id){
-        return tagConverter.convertToResponseDto(tagServiceImpl.getByID(id));
+        return tagConverter.convertToResponseDto(tagService.getByID(id));
     }
 
     @GetMapping()
     public List<TagResponseDto> getTags(){
-        return tagConverter.convertToResponseDtos(tagServiceImpl.getAll());
+        return tagConverter.convertToResponseDtos(tagService.getAll());
     }
 
     @DeleteMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTag(@PathVariable("id") Long id){
-        tagServiceImpl.deleteByID(id);
+        tagService.deleteByID(id);
     }
 
 
@@ -56,7 +56,7 @@ public class TagController {
     @ResponseStatus(HttpStatus.CREATED)
     public TagResponseDto createTag(@RequestBody @Validated(CreateDTO.class) TagDto tagDto){
         Tag tag = tagConverter.convertFromRequestDto(tagDto);
-        return tagConverter.convertToResponseDto(tagServiceImpl.addEntity(tag));
+        return tagConverter.convertToResponseDto(tagService.addEntity(tag));
     }
 
 }

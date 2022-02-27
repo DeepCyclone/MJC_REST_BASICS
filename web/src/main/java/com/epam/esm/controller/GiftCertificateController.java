@@ -1,12 +1,12 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.converter.CertificateConverter;
+import com.epam.esm.converter.impl.CertificateConverter;
 import com.epam.esm.dto.CreateDTO;
 import com.epam.esm.dto.PatchDTO;
 import com.epam.esm.dto.request.GiftCertificateDto;
 import com.epam.esm.dto.response.GiftCertificateResponseDto;
 import com.epam.esm.repository.model.GiftCertificate;
-import com.epam.esm.service.impl.GiftCertificateServiceImpl;
+import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,45 +30,45 @@ import java.util.Map;
 @RequestMapping(value = "/api/v1/certificates",produces = {MediaType.APPLICATION_JSON_VALUE})
 public class GiftCertificateController {
 
-    private final GiftCertificateServiceImpl service;
-    private final CertificateConverter converter;
+    private final GiftCertificateService certificateService;
+    private final CertificateConverter certificateConverter;
 
     @Autowired
-    public GiftCertificateController(GiftCertificateServiceImpl service, CertificateConverter converter) {
-        this.service = service;
-        this.converter = converter;
+    public GiftCertificateController(GiftCertificateService certificateService, CertificateConverter certificateConverter) {
+        this.certificateService = certificateService;
+        this.certificateConverter = certificateConverter;
     }
 
     @GetMapping
     public List<GiftCertificateResponseDto> getAllByRequestParams(@RequestParam Map<String,String> params) {
-        return converter.convertToResponseDtos(service.handleParametrizedGetRequest(params));
+        return certificateConverter.convertToResponseDtos(certificateService.handleParametrizedGetRequest(params));
     }
 
     @GetMapping(value = "/{id:\\d+}")
     public GiftCertificateResponseDto getByID(@PathVariable long id) {
 
-        GiftCertificate giftCertificate = service.getByID(id);
-        return converter.convertToResponseDto(giftCertificate);
+        GiftCertificate giftCertificate = certificateService.getByID(id);
+        return certificateConverter.convertToResponseDto(giftCertificate);
     }
 
     @DeleteMapping(value = "/{id:\\d+}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCertificate(@PathVariable long id){
-        service.deleteByID(id);
+        certificateService.deleteByID(id);
     }
 
     @PutMapping
     public ResponseEntity<GiftCertificateResponseDto> updateCertificate(@RequestBody @Validated(PatchDTO.class) GiftCertificateDto certificateDtoPatch){
-        GiftCertificate certificate = converter.convertFromRequestDto(certificateDtoPatch);
-        GiftCertificateResponseDto a = converter.convertToResponseDto(service.update(certificate));
+        GiftCertificate certificate = certificateConverter.convertFromRequestDto(certificateDtoPatch);
+        GiftCertificateResponseDto a = certificateConverter.convertToResponseDto(certificateService.update(certificate));
         return new ResponseEntity<>(a,HttpStatus.CREATED);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificateResponseDto createCertificate(@RequestBody @Validated(CreateDTO.class) GiftCertificateDto certificateDto) {
-        GiftCertificate certificate = converter.convertFromRequestDto(certificateDto);
-        return converter.convertToResponseDto(service.addEntity(certificate));
+        GiftCertificate certificate = certificateConverter.convertFromRequestDto(certificateDto);
+        return certificateConverter.convertToResponseDto(certificateService.addEntity(certificate));
     }
 
 }

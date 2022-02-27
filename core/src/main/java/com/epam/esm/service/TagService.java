@@ -6,7 +6,8 @@ import java.util.List;
 
 public interface TagService {
     List<Tag> getAll();
-    Tag getByID(long ID);
+    Tag getByID(long id);
     Tag addEntity(Tag tag);
-    void deleteByID(long ID);
+    void deleteByID(long id);
+    void updateByID(long id) throws UnsupportedOperationException;
 }

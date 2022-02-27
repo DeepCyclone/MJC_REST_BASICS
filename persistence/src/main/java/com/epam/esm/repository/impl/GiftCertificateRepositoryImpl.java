@@ -1,6 +1,5 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.exception.RepositoryException;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.field.GiftCertificateField;
 import com.epam.esm.repository.mapping.GiftCertificateMapping;
@@ -40,14 +39,18 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
 
     private final JdbcTemplate jdbcOperations;
+    private final GiftCertificateMapping certificateMapper;
+    private final TagMapping tagMapper;
 
     @Autowired
-    public GiftCertificateRepositoryImpl(JdbcTemplate jdbcOperations) {
+    public GiftCertificateRepositoryImpl(JdbcTemplate jdbcOperations, GiftCertificateMapping mapper, TagMapping tagMapper) {
         this.jdbcOperations = jdbcOperations;
+        this.certificateMapper = mapper;
+        this.tagMapper = tagMapper;
     }
 
     @Override
-    public GiftCertificate create(GiftCertificate object) throws RepositoryException {
+    public GiftCertificate create(GiftCertificate object){
         SimpleJdbcInsertOperations simpleJdbcInsert = new SimpleJdbcInsert(this.jdbcOperations);
         simpleJdbcInsert.withTableName("gift_certificate").usingGeneratedKeyColumns("gc_id").usingColumns("gc_name","gc_description","gc_price","gc_duration");
         Map<String,Object> params = new HashMap<>();
@@ -61,7 +64,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public List<GiftCertificate> readAll() {
-        return jdbcOperations.query(READ_ALL,new GiftCertificateMapping());
+        return jdbcOperations.query(READ_ALL, certificateMapper);
     }
 
     @Override
@@ -71,13 +74,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                 object.getDescription(),
                 object.getPrice(),
                 object.getDuration(),
-                ID) == MIN_AFFECTED_ROWS;
+                ID) >= MIN_AFFECTED_ROWS;
     }
 
     @Override
     public Optional<GiftCertificate> getByID(long ID){
         try {
-            return Optional.of(jdbcOperations.queryForObject(READ_BY_ID, new GiftCertificateMapping(), ID));
+            return Optional.ofNullable(jdbcOperations.queryForObject(READ_BY_ID, certificateMapper, ID));
         }
         catch (DataAccessException e){
             return Optional.empty();
@@ -110,7 +113,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public List<Tag> fetchAssociatedTags(long certificateID) {
-        return jdbcOperations.query(FETCH_ASSOCIATED_TAGS,new TagMapping(),certificateID);
+        return jdbcOperations.query(FETCH_ASSOCIATED_TAGS,tagMapper,certificateID);
     }
 
     @Override
@@ -118,7 +121,17 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         String query = ComplexParamMapProcessor.buildQuery(params);
         prepareParamsToSearchStatement(params);
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(this.jdbcOperations);
-        return template.query(query, params,new GiftCertificateMapping());
+        return template.query(query, params,certificateMapper);
+    }
+
+    @Override
+    public Optional<GiftCertificate> getByName(String name){
+        try {
+            return Optional.ofNullable(jdbcOperations.queryForObject(READ_BY_NAME, certificateMapper, name));
+        }
+        catch (DataAccessException e){
+            return Optional.empty();
+        }
     }
 
     private void prepareParamsToSearchStatement(Map<String,String> params){
@@ -127,16 +140,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         }
         if(params.containsKey(ComplexParamMapProcessor.descriptionPart)){
             params.replace(ComplexParamMapProcessor.descriptionPart,ComplexParamMapProcessor.PERCENT+params.get(ComplexParamMapProcessor.descriptionPart)+ComplexParamMapProcessor.PERCENT);
-        }
-    }
-
-    @Override
-    public Optional<GiftCertificate> getByName(String name){
-        try {
-            return Optional.of(jdbcOperations.queryForObject(READ_BY_NAME, new GiftCertificateMapping(), name));
-        }
-        catch (DataAccessException e){
-            return Optional.empty();
         }
     }
 

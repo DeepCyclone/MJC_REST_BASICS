@@ -9,12 +9,13 @@ import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.epam.esm.exception.ErrorCode.CERTIFICATE_BAD_REQUEST_PARAMS;
 
@@ -52,17 +53,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void deleteByID(long id){
         boolean result = certificateRepository.deleteByID(id);
-
         if(!result){
             throw new ServiceException(ErrorCode.CERTIFICATE_DELETION_ERROR,"Cannot delete cert with id = "+id);
         }
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public GiftCertificate update(GiftCertificate certificatePatch) {
         GiftCertificate originalCertificate = getByID(certificatePatch.getId());
         Optional.ofNullable(certificatePatch.getName()).ifPresent(originalCertificate::setName);
@@ -80,16 +80,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<Tag> saveAssociatedTags(List<Tag> tags) {
-        List<Tag> tagsIdentifiable = new ArrayList<>();
-        tags.forEach(tag-> tagsIdentifiable.add(tagRepository.create(tag)));
-        return tagsIdentifiable;
+        return tags.stream().map(tagRepository::create).collect(Collectors.toList());
     }
 
     @Override
     public List<GiftCertificate> handleParametrizedGetRequest(Map<String,String> params){
         checkInvalidValuedParams(params);
         List<GiftCertificate> certificates = certificateRepository.handleParametrizedRequest(params);
-        certificates.forEach(certificate->certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(certificate.getId())));
+        certificates.forEach(certificate -> certificate.setAssociatedTags(certificateRepository.fetchAssociatedTags(certificate.getId())));
         return certificates;
     }
 

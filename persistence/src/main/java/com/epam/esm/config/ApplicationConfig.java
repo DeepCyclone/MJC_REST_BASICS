@@ -13,7 +13,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableTransactionManagement
 public class ApplicationConfig {
 
     private final DataSource dataSource;

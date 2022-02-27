@@ -7,7 +7,7 @@ import java.util.List;
 *
 *
 * */
-interface ConverterTemplate <A,B,C>{
+public interface ConverterTemplate <A,B,C>{
     A convertFromRequestDto(B dto);
     List<A> convertFromRequestDtos(List<B> dtos);
     C convertToResponseDto(A object);

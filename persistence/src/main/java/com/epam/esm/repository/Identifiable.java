@@ -1,6 +1,5 @@
 package com.epam.esm.repository;
 
-import com.epam.esm.exception.RepositoryException;
 
 import java.util.Optional;
 
@@ -9,6 +8,6 @@ import java.util.Optional;
 * @author Flexus
 * */
 public interface Identifiable<T> {
-    Optional<T> getByID(long ID) throws RepositoryException;
+    Optional<T> getByID(long ID);
     boolean deleteByID(long ID);
 }

@@ -13,12 +13,6 @@ public class ExceptionProcessor  {
 
     private static final int ERROR_CODE_START = 0;
     private static final int ERROR_CODE_END = 3;
-    @ExceptionHandler(RepositoryException.class)
-    @ResponseBody
-    public ResponseEntity<ErrorDescriptor> objectNotFound(RepositoryException e){
-        HttpStatus status = HttpStatus.resolve(Integer.parseInt(e.getErrorCode().substring(ERROR_CODE_START,ERROR_CODE_END)));
-        return new ResponseEntity<>(new ErrorDescriptor(e.getErrorCode(),e.getErrorMsg()),status);
-    }
 
     @ExceptionHandler(ServiceException.class)
     @ResponseBody
@@ -29,7 +23,7 @@ public class ExceptionProcessor  {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
-    public ResponseEntity<?> validationExceptionHandler(MethodArgumentNotValidException e){
+    public ResponseEntity<String> validationExceptionHandler(MethodArgumentNotValidException e){
         StringBuilder builder = new StringBuilder();
         for(FieldError error:e.getFieldErrors()){
             builder.append(error.getDefaultMessage());

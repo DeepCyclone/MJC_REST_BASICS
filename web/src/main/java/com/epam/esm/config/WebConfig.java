@@ -1,5 +1,6 @@
 package com.epam.esm.config;
 
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 @EnableWebMvc
 @ComponentScan(basePackages = {"com.epam.esm"})
 public class WebConfig implements WebMvcConfigurer {
+
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         configurer.defaultContentType(MediaType.APPLICATION_JSON);
@@ -34,6 +36,4 @@ public class WebConfig implements WebMvcConfigurer {
             DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
     }
-
-
 }

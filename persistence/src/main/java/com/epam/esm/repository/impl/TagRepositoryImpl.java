@@ -32,10 +32,14 @@ public class TagRepositoryImpl implements TagRepository {
     public static final int MIN_AFFECTED_ROWS = 1;
 
     private final JdbcTemplate jdbcTemplate;
+    private final GiftCertificateMapping certificateMapper;
+    private final TagMapping tagMapper;
 
     @Autowired
-    public TagRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    public TagRepositoryImpl(JdbcTemplate jdbcTemplate, GiftCertificateMapping certificateMapper, TagMapping tagMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.certificateMapper = certificateMapper;
+        this.tagMapper = tagMapper;
     }
 
     @Override
@@ -60,7 +64,7 @@ public class TagRepositoryImpl implements TagRepository {
             return getByID(holder.getKey().longValue()).get();
         }
         else {
-            if(object.getName()!=null){
+            if(object.getName()!=null && getByName(object.getName()).isPresent()){
                 return getByName(object.getName()).get();
             }
             else {
@@ -71,7 +75,7 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public List<Tag> readAll() {
-        return jdbcTemplate.query(READ_ALL,new TagMapping());
+        return jdbcTemplate.query(READ_ALL,tagMapper);
     }
 
     @Override
@@ -82,7 +86,7 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public Optional<Tag> getByID(long ID) {
         try {
-            return Optional.of(jdbcTemplate.queryForObject(READ_BY_ID, new TagMapping(), ID));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(READ_BY_ID, tagMapper, ID));
         }
         catch (DataAccessException e){
             return Optional.empty();
@@ -99,7 +103,7 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public Optional<Tag> getByName(String name) {
         try {
-            return Optional.of(jdbcTemplate.queryForObject(GET_BY_NAME, new TagMapping(), name));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(GET_BY_NAME, tagMapper, name));
         }
         catch (DataAccessException e){
             return Optional.empty();
@@ -108,6 +112,6 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public List<GiftCertificate> fetchAssociatedCertificates(long tagID) {
-        return jdbcTemplate.query(FETCH_ASSOCIATED_CERTIFICATES,new GiftCertificateMapping(),tagID);
+        return jdbcTemplate.query(FETCH_ASSOCIATED_CERTIFICATES,certificateMapper,tagID);
     }
 }

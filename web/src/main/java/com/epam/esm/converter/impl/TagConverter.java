@@ -1,5 +1,6 @@
-package com.epam.esm.converter;
+package com.epam.esm.converter.impl;
 
+import com.epam.esm.converter.ConverterTemplate;
 import com.epam.esm.dto.request.TagDto;
 import com.epam.esm.dto.response.TagResponseDto;
 import com.epam.esm.repository.model.Tag;
@@ -7,9 +8,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
-public class TagConverter implements ConverterTemplate<Tag, TagDto, TagResponseDto>{
+public class TagConverter implements ConverterTemplate<Tag, TagDto, TagResponseDto> {
 
     @Override
     public Tag convertFromRequestDto(TagDto dto) {
@@ -21,13 +23,7 @@ public class TagConverter implements ConverterTemplate<Tag, TagDto, TagResponseD
 
     @Override
     public List<Tag> convertFromRequestDtos(List<TagDto> dtos) {
-        List<Tag> tags = new ArrayList<>();
-        if(dtos!=null) {
-            for (TagDto dto : dtos) {
-                tags.add(convertFromRequestDto(dto));
-            }
-        }
-        return tags;
+        return dtos.stream().map(this::convertFromRequestDto).collect(Collectors.toList());
     }
 
     @Override
