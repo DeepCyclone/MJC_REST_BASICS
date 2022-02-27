@@ -32,6 +32,7 @@ public class TagServiceImpl implements TagService {
                 ()->new ServiceException(ErrorCode.TAG_NOT_FOUND,"Couldn't fetch tag with id = "+id));
     }
     @Override
+    @Transactional
     public Tag addEntity(Tag tag) {
         return tagRepository.create(tag);
     }

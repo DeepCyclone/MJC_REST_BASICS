@@ -45,6 +45,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public GiftCertificate addEntity(GiftCertificate certificateDto) {
         GiftCertificate baseCert = certificateRepository.create(certificateDto);
         List<Tag> savedTags = saveAssociatedTags(certificateDto.getAssociatedTags());
@@ -53,7 +54,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Transactional
     public void deleteByID(long id){
         boolean result = certificateRepository.deleteByID(id);
         if(!result){
@@ -62,7 +63,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Transactional
     public GiftCertificate update(GiftCertificate certificatePatch) {
         GiftCertificate originalCertificate = getByID(certificatePatch.getId());
         Optional.ofNullable(certificatePatch.getName()).ifPresent(originalCertificate::setName);
@@ -79,6 +80,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public List<Tag> saveAssociatedTags(List<Tag> tags) {
         return tags.stream().map(tagRepository::create).collect(Collectors.toList());
     }

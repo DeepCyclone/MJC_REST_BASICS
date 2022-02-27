@@ -7,8 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsertOperations;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.TransactionManager;
 
 import javax.sql.DataSource;
 
@@ -28,8 +27,8 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public TransactionTemplate transactionTemplate(){
-        return new TransactionTemplate(new DataSourceTransactionManager());
+    public TransactionManager transactionManager(){
+        return new DataSourceTransactionManager(dataSource);
     }
 
     @Bean
